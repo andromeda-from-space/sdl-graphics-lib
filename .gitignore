@@ -1,0 +1,6 @@
+# Ignore the compiled files
+*.o
+sdl-test
+# Ignore the tutorial files
+*.bmp
+scratch.txt
