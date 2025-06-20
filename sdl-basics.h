@@ -24,8 +24,33 @@ class SDLWindowWrapper {
         ~SDLWindowWrapper();
 
         //---------- TUTORIAL CODE ----------
+        // Note - some of the lessons require adding additional code not represented here
         // Lesson 1 - HelloWorld
         void lesson1();
+        // Lesson 2 - blitting a BMP
+        void lesson2();
+        // Lesson 3 - events
+        void lesson3();
+        // Lesson 4 - key presses
+        void lesson4();
+        // Lesson 5 - optimized loading
+        void lesson5();
+        // Lessonm 6 - extension libraries for SDL
+        void lesson6();
+        // Lesson 7 - texture loading and rendering
+        void lesson7();
+        // Lesson 8 - geometry rendering
+        void lesson8();
+        // Lesson 9 - view port
+        void lesson9();
+        // Lesson 10 - Color keying
+        void lesson10();
+        // Lesson 11 - Clipping and rendering sprite sheets
+        void lesson11();
+        // Lesson 12 - Color modulation
+        void lesson12();
+        // Lesson 13 - Alpha Blending
+        void lesson13();
     private:
         // Width of the screen
         int screenWidth;
