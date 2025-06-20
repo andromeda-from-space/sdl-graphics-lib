@@ -398,7 +398,49 @@ void SDLWindowWrapper::lesson9(){
 }
 
 void SDLWindowWrapper::lesson10(){
-    // TODO
+    // Loading flag
+    bool success = true;
+
+    // Texture wrappers for images
+    SDLTextureWrapper background;
+    SDLTextureWrapper foo;
+
+    // Load the images
+    success = background.loadFromFile(renderer, "background.png");
+    if(!success){
+        return;
+    }
+    success = foo.loadFromFile(renderer, "foo.png");
+
+    if(success){
+        // Main loop
+        // The current event
+        SDL_Event e;
+        // Flag for quitting
+        bool quit = false;
+        while( quit == false ){
+            // Remove all events from the queue
+            while( SDL_PollEvent( &e ) ){
+                // Here is where event processing goes
+                if( e.type == SDL_QUIT ){
+                    quit = true;
+                }
+                
+                // Clear screen
+                SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+                SDL_RenderClear(renderer);
+
+                // Render the two images
+                background.render(renderer, 0, 0);
+                foo.render(renderer, 240, 190);
+
+                // Update screen
+                SDL_RenderPresent(renderer);
+            }
+        }
+    }
+
+    // Texture data should automatically get cleaned up with the destructor
 }
 
 void SDLWindowWrapper::lesson11(){
@@ -488,4 +530,85 @@ bool SDLWindowWrapper::init(string title){
         }
     }
     return true;
+}
+
+//--------------------------------------------------------------------
+//---------- SDLTextureWrapper ---------------------------------------
+//--------------------------------------------------------------------
+//---------- CONSTRUCTORS & DESTRUCTOR ----------
+SDLTextureWrapper::SDLTextureWrapper() : texture(nullptr), width(-1), height(-1){}
+
+SDLTextureWrapper::SDLTextureWrapper(const SDLTextureWrapper& other) : texture(nullptr), width(-1), height(-1){
+    // TODO
+}
+
+SDLTextureWrapper& SDLTextureWrapper::operator=(const SDLTextureWrapper& other) {
+    // TODO
+    return *this;
+}
+
+SDLTextureWrapper::~SDLTextureWrapper(){
+    free();
+}
+
+//---------- UTILITIES ----------
+bool SDLTextureWrapper::loadFromFile(SDL_Renderer* renderer, string path){
+    // Remove anything that has already been loaded in
+    free();
+
+    // Flag for loading success
+    bool success = true;
+
+    // Load image at specified path as a surface
+    SDL_Surface* loadedSurface = IMG_Load(path.c_str());
+    if(!loadedSurface){
+        fprintf(stderr, "Unable to load image %s! SDL Error: %s\n", path.c_str(), IMG_GetError());
+        // TODO - exception handling
+        success = false;
+    } else {
+        // Set the color key
+        SDL_SetColorKey(loadedSurface, SDL_TRUE, SDL_MapRGB(loadedSurface->format, 0, 0xFF, 0xFF));
+
+        // Convert the loaded image to into a texture
+        texture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
+        if(!texture){
+            fprintf(stderr, "Unable to optimize image %s! SDL Error: %s\n", path.c_str(), SDL_GetError());
+            // TODO - exception handling
+            success = false;
+        } else {
+            // Get the image dimensions
+            width = loadedSurface->w;
+            height = loadedSurface->h;
+        }
+        SDL_FreeSurface( loadedSurface );
+    }
+
+    return success;
+}
+
+void SDLTextureWrapper::free(){
+    if(texture){
+        // Destroy the texture
+        SDL_DestroyTexture(texture);
+        texture = nullptr;
+
+        // Set the width and the height to nonsense values
+        width = -1;
+        height = -1;
+    }
+}
+
+void SDLTextureWrapper::render(SDL_Renderer* renderer, int x, int y){
+    // Render the image into the correct location
+    SDL_Rect renderQuad = {x, y, width, height};
+    SDL_RenderCopy(renderer, texture, NULL, &renderQuad);
+}
+
+//---------- ACCESSORS ----------
+int SDLTextureWrapper::getWidth(){
+    return height;
+}
+
+int SDLTextureWrapper::getHeight(){
+    return width;
 }

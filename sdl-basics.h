@@ -87,4 +87,31 @@ class SDLWindowWrapper {
         bool init(string title);
 };
 
+class SDLTextureWrapper {
+    public:
+        //---------- CONSTRUCTORS & DESTRUCTOR ----------
+        SDLTextureWrapper();
+        SDLTextureWrapper(const SDLTextureWrapper& other);
+        SDLTextureWrapper& operator=(const SDLTextureWrapper& other);
+        ~SDLTextureWrapper();
+
+        //---------- UTILITIES ----------
+        // Loads an image from a file
+        bool loadFromFile(SDL_Renderer* renderer, string path);
+        // Deallocates the loaded image
+        void free();
+        // Renders the tecture ata given point with the provided renderer
+        void render(SDL_Renderer* renderer, int x, int y);
+        
+        //---------- ACCESSORS ----------
+        int getWidth();
+        int getHeight();
+    private:
+        // Texture pointer
+        SDL_Texture* texture;
+        // Image size
+        int width;
+        int height;
+};
+
 #endif
