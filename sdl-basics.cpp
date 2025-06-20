@@ -444,7 +444,53 @@ void SDLWindowWrapper::lesson10(){
 }
 
 void SDLWindowWrapper::lesson11(){
-    // TODO
+        // Loading flag
+    bool success = true;
+
+    // Load the sprite sheet
+    SDLTextureWrapper spriteSheet;
+
+    // Load the images
+    success = spriteSheet.loadFromFile(renderer, "dots.png");
+
+    // If sucessfully loaded
+    if(success){
+        // Clipping rectangles for the sprite sheet
+        SDL_Rect gSpriteClips[4];
+        gSpriteClips[0] = {0, 0, 100, 100};
+        gSpriteClips[1] = {100, 0, 100, 100};
+        gSpriteClips[2] = {0, 100, 100, 100};
+        gSpriteClips[3] = {100, 100, 100, 100};
+
+        // The current event
+        SDL_Event e;
+        // Flag for quitting
+        bool quit = false;
+
+        // Main loop
+        while( quit == false ){
+            // Remove all events from the queue
+            while( SDL_PollEvent( &e ) ){
+                // Here is where event processing goes
+                if( e.type == SDL_QUIT ){
+                    quit = true;
+                }
+                
+                // Clear screen
+                SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+                SDL_RenderClear(renderer);
+
+                // Render the sprites in the corners
+                spriteSheet.render(renderer, 0, 0, &gSpriteClips[0]);
+                spriteSheet.render(renderer, screenWidth - gSpriteClips[1].w, 0, &gSpriteClips[1]);
+                spriteSheet.render(renderer, 0, screenHeight - gSpriteClips[2].h, &gSpriteClips[2]);
+                spriteSheet.render(renderer, screenWidth - gSpriteClips[1].w, screenHeight - gSpriteClips[2].h, &gSpriteClips[3]);
+
+                // Update screen
+                SDL_RenderPresent(renderer);
+            }
+        }
+    }
 }
 
 void SDLWindowWrapper::lesson12(){
@@ -598,10 +644,18 @@ void SDLTextureWrapper::free(){
     }
 }
 
-void SDLTextureWrapper::render(SDL_Renderer* renderer, int x, int y){
+void SDLTextureWrapper::render(SDL_Renderer* renderer, int x, int y, SDL_Rect* clip){
     // Render the image into the correct location
     SDL_Rect renderQuad = {x, y, width, height};
-    SDL_RenderCopy(renderer, texture, NULL, &renderQuad);
+
+    // Use the clipping rectangle to extract the sprite
+    if(clip){
+        renderQuad.w = clip->w;
+        renderQuad.h = clip->h;
+    }
+
+    // Render to the screen
+    SDL_RenderCopy(renderer, texture, clip, &renderQuad);
 }
 
 //---------- ACCESSORS ----------

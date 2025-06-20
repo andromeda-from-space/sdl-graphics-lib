@@ -101,7 +101,7 @@ class SDLTextureWrapper {
         // Deallocates the loaded image
         void free();
         // Renders the tecture ata given point with the provided renderer
-        void render(SDL_Renderer* renderer, int x, int y);
+        void render(SDL_Renderer* renderer, int x, int y, SDL_Rect* clip = NULL);
         
         //---------- ACCESSORS ----------
         int getWidth();

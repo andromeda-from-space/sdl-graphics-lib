@@ -3,6 +3,6 @@
 int main( int argc, char* args[] )
 {
     SDLWindowWrapper appWindow = SDLWindowWrapper();
-    appWindow.lesson10();
+    appWindow.lesson11();
 	return 0;
 }
