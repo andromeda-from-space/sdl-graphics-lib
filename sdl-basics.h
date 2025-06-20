@@ -62,12 +62,47 @@ class SDLWindowWrapper {
         void lesson12();
         // Lesson 13 - Alpha Blending
         void lesson13();
+        // Lesson 14 - Animated Sprites and VSync
+        void lesson14();
+        // Lesson 15 - Rotation and Flipping
+        void lesson15();
+        // Lesson 16 - True Type Fonts
+        void lesson16();
+        // Lesson 17 - Mouse Events
+        void lesson17();
+        // Lesson 18 - Key States
+        void lesson18();
+        // Lesson 19 - Gamepads and Joysticks
+        void lesson19();
+        // Lesson 20 - Force Feedback
+        void lesson20();
+        // Lesson 21 - Sound eeffects and Music
+        void lesson21();
+        // Lesson 22 - Timing
+        void lesson22();
+        // Lesson 23 - Advanced Timers
+        void lesson23();
+        // Lesson 24 - Calculating Frame Rate
+        void lesson24();
+        // Lesson 25 - Capping Frame Rate
+        void lesson25();
+        // Lesson 26 - Motion
+        void lesson26();
+        // Lesson 27 - Collision detection
+        void lesson27();
+        // Lesson 28 - Per-pixel collision detection
+        void lesson28();
+        // Lesson 29 - Circular collision detection
+        void lesson29();
+        // Lesson 30 - Scrolling
+        void lesson30();
 
         //---------- UTILITIES ----------
         // Load function for bmp images
         // --DEPRECATED--
         SDL_Surface* loadSurface(string path);
         // Load textures as opposed to surfaces for hardware rendering
+        // --DEPRECATED--
         SDL_Texture* loadTexture(string path);
     private:
         // Width of the screen
@@ -102,7 +137,8 @@ class SDLTextureWrapper {
         void free();
         // Renders the tecture ata given point with the provided renderer
         void render(SDL_Renderer* renderer, int x, int y, SDL_Rect* clip = NULL);
-        
+        // Performs color modulation which multiplies the colors in the texture by the fraction val / 255
+        void setColor(Uint8 red, Uint8 green, Uint8 blue);
         //---------- ACCESSORS ----------
         int getWidth();
         int getHeight();

@@ -444,7 +444,7 @@ void SDLWindowWrapper::lesson10(){
 }
 
 void SDLWindowWrapper::lesson11(){
-        // Loading flag
+    // Loading flag
     bool success = true;
 
     // Load the sprite sheet
@@ -494,10 +494,144 @@ void SDLWindowWrapper::lesson11(){
 }
 
 void SDLWindowWrapper::lesson12(){
-    // TODO
+     // Loading flag
+    bool success = true;
+
+    // Load the sprite sheet
+    SDLTextureWrapper colorMap;
+
+    // Load the images
+    success = colorMap.loadFromFile(renderer, "colors.png");
+
+    // If sucessfully loaded
+    if(success){
+        // The current event
+        SDL_Event e;
+        // Flag for quitting
+        bool quit = false;
+
+        // Color modulation colors
+        Uint8 r = 255;
+        Uint8 g = 255;
+        Uint8 b = 255;
+        // Note: Uint8's will auto wrap, so 255 + 32 = 31
+
+        // Main loop
+        while( quit == false ){
+            // Remove all events from the queue
+            while( SDL_PollEvent( &e ) ){
+                // Here is where event processing goes
+                if( e.type == SDL_QUIT ){
+                    quit = true;
+                } else if(e.type == SDL_KEYDOWN){
+                    switch(e.key.keysym.sym){
+                        case SDLK_q:
+                            r += 32;
+                            break;
+                        case SDLK_w:
+                            g += 32;
+                            break;
+                        case SDLK_e:
+                            b += 32;
+                            break;
+                        case SDLK_a:
+                            r -= 32;
+                            break;
+                        case SDLK_s:
+                            g -= 32;
+                            break;
+                        case SDLK_d:
+                            b -= 32;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+                
+            // Clear screen
+            SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+            SDL_RenderClear(renderer);
+
+            // Render
+            colorMap.setColor(r, g, b);
+            colorMap.render(renderer, 0, 0);
+
+            // Update screen
+            SDL_RenderPresent(renderer);
+        }
+    }
 }
 
 void SDLWindowWrapper::lesson13(){
+    // TODO
+}
+
+void SDLWindowWrapper::lesson14(){
+    // TODO
+}
+
+void SDLWindowWrapper::lesson15(){
+    // TODO
+}
+
+void SDLWindowWrapper::lesson16(){
+    // TODO
+}
+
+void SDLWindowWrapper::lesson17(){
+    // TODO
+}
+
+void SDLWindowWrapper::lesson18(){
+    // TODO
+}
+
+void SDLWindowWrapper::lesson19(){
+    // TODO
+}
+
+void SDLWindowWrapper::lesson20(){
+    // TODO
+}
+
+void SDLWindowWrapper::lesson21(){
+    // TODO
+}
+
+void SDLWindowWrapper::lesson22(){
+    // TODO
+}
+
+void SDLWindowWrapper::lesson23(){
+    // TODO
+}
+
+void SDLWindowWrapper::lesson24(){
+    // TODO
+}
+
+void SDLWindowWrapper::lesson25(){
+    // TODO
+}
+
+void SDLWindowWrapper::lesson26(){
+    // TODO
+}
+
+void SDLWindowWrapper::lesson27(){
+    // TODO
+}
+
+void SDLWindowWrapper::lesson28(){
+    // TODO
+}
+
+void SDLWindowWrapper::lesson29(){
+    // TODO
+}
+
+void SDLWindowWrapper::lesson30(){
     // TODO
 }
 
@@ -656,6 +790,11 @@ void SDLTextureWrapper::render(SDL_Renderer* renderer, int x, int y, SDL_Rect* c
 
     // Render to the screen
     SDL_RenderCopy(renderer, texture, clip, &renderQuad);
+}
+
+void SDLTextureWrapper::setColor(Uint8 red, Uint8 green, Uint8 blue){
+    //Modulate texture
+    SDL_SetTextureColorMod(texture, red, green, blue);
 }
 
 //---------- ACCESSORS ----------
