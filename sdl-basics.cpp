@@ -287,7 +287,47 @@ void SDLWindowWrapper::lesson7(){
 }
 
 void SDLWindowWrapper::lesson8(){
-    // TODO
+    // Main loop
+    // The current event
+    SDL_Event e;
+    // Flag for quitting
+    bool quit = false;
+    while( quit == false ){
+        // Remove all events from the queue
+        while( SDL_PollEvent( &e ) ){
+            // Here is where event processing goes
+            if( e.type == SDL_QUIT ){
+                quit = true;
+            }
+            
+            // Clear screen
+            SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+            SDL_RenderClear(renderer);
+
+            // Draw a rectangle
+            SDL_Rect fillRect = {SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2};
+            SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0x00, 0xFF);        
+            SDL_RenderFillRect(renderer, &fillRect);
+
+            // Draw a 1 pixel outline of a rectangle
+            SDL_Rect outlineRect = {SCREEN_WIDTH / 6, SCREEN_HEIGHT / 6, SCREEN_WIDTH * 2 / 3, SCREEN_HEIGHT * 2 / 3};
+            SDL_SetRenderDrawColor(renderer, 0x00, 0xFF, 0x00, 0xFF);        
+            SDL_RenderDrawRect(renderer, &outlineRect);
+
+            // Draw blue horizontal line
+            SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xFF, 0xFF);        
+            SDL_RenderDrawLine(renderer, 0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2);
+
+            // Draw vertical line of black dots
+            SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
+            for(int i = 0; i < SCREEN_HEIGHT; i += 4){
+                SDL_RenderDrawPoint(renderer, SCREEN_WIDTH / 2, i);
+            }
+
+            // Update screen
+            SDL_RenderPresent(renderer);
+        }
+    }
 }
 
 void SDLWindowWrapper::lesson9(){
