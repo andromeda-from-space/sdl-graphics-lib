@@ -74,7 +74,7 @@ class SDLWindowWrapper {
         // Pointer for the SDL_Window
         SDL_Window* window;
         // Pointer for the SDL_Surface
-        SDL_Surface* screenSurface;
+        SDL_Surface* windowSurface;
 
         //---------- PRIVATE UTILITIES ----------
         // Initialize the SDL subsystems for use

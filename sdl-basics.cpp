@@ -6,11 +6,11 @@
 //---------- SDLWindowWrapper ----------------------------------------
 //--------------------------------------------------------------------
 //---------- CONSTRUCTORS & DESTRUCTOR ----------
-SDLWindowWrapper::SDLWindowWrapper() : screenWidth(SCREEN_WIDTH), screenHeight(SCREEN_HEIGHT), window(nullptr), screenSurface(nullptr){
+SDLWindowWrapper::SDLWindowWrapper() : screenWidth(SCREEN_WIDTH), screenHeight(SCREEN_HEIGHT), window(nullptr), windowSurface(nullptr){
     init("SDL Window");
 }
 
-SDLWindowWrapper::SDLWindowWrapper(int width, int height, string title) : screenWidth(width), screenHeight(height), window(nullptr), screenSurface(nullptr){
+SDLWindowWrapper::SDLWindowWrapper(int width, int height, string title) : screenWidth(width), screenHeight(height), window(nullptr), windowSurface(nullptr){
     init(title);
 }
 
@@ -33,7 +33,7 @@ SDLWindowWrapper::~SDLWindowWrapper(){
 //---------- TUTORIAL CODE ----------
 void SDLWindowWrapper::lesson1(){
     //Fill the surface white
-    SDL_FillRect( screenSurface, NULL, SDL_MapRGB( screenSurface->format, 0xFF, 0xFF, 0xFF ) );
+    SDL_FillRect( windowSurface, NULL, SDL_MapRGB( windowSurface->format, 0xFF, 0xFF, 0xFF ) );
     
     //Update the surface
     SDL_UpdateWindowSurface( window );
@@ -53,7 +53,7 @@ void SDLWindowWrapper::lesson2(){
 	} else {
         // Main loop
         //Apply the image
-        SDL_BlitSurface( gHelloWorld, NULL, screenSurface, NULL );
+        SDL_BlitSurface( gHelloWorld, NULL, windowSurface, NULL );
         
         //Update the surface
         SDL_UpdateWindowSurface(window);
@@ -92,7 +92,7 @@ void SDLWindowWrapper::lesson3(){
                 
                 // Here is where building the image goes
                 // Blit the image on each pass
-                SDL_BlitSurface( gHelloWorld, NULL, screenSurface, NULL );
+                SDL_BlitSurface( gHelloWorld, NULL, windowSurface, NULL );
 
                 // Update the surface of the window to display the new image
                 SDL_UpdateWindowSurface(window);
@@ -164,7 +164,7 @@ void SDLWindowWrapper::lesson4(){
                 
                 // Here is where building the image goes
                 // Blit the image on each pass
-                SDL_BlitSurface( gCurrentSurface, NULL, screenSurface, NULL );
+                SDL_BlitSurface( gCurrentSurface, NULL, windowSurface, NULL );
 
                 // Update the surface of the window to display the new image
                 SDL_UpdateWindowSurface(window);
@@ -180,7 +180,41 @@ void SDLWindowWrapper::lesson4(){
 }
 
 void SDLWindowWrapper::lesson5(){
-    // TODO
+        // Nominally prt of init()
+	// Load splash image
+	SDL_Surface* gImageStretch = nullptr;
+    gImageStretch = loadSurface( "stretch.bmp" );
+	if(gImageStretch){
+        // Blit the image with the stretch
+        SDL_Rect stretchRect;
+        stretchRect.x = 0;
+        stretchRect.y = 0;
+        stretchRect.w = screenWidth;
+        stretchRect.h = screenHeight;
+        SDL_BlitScaled( gImageStretch, NULL, windowSurface, &stretchRect );
+
+        // Update the surface of the window to display the new image
+        SDL_UpdateWindowSurface(window);
+
+        // Main loop
+        // The current event
+        SDL_Event e;
+        // Flag for quitting
+        bool quit = false;
+        while( quit == false ){
+            // Remove all events from the queue
+            while( SDL_PollEvent( &e ) ){
+                if( e.type == SDL_QUIT ){
+                    quit = true;
+                }
+            }
+        }
+    }
+    
+    // Nominally part of close()
+    // Deallocate surface
+	SDL_FreeSurface( gImageStretch );
+	gImageStretch = nullptr;
 }
 
 void SDLWindowWrapper::lesson6(){
@@ -217,13 +251,21 @@ void SDLWindowWrapper::lesson13(){
 
 //---------- UTILITIES ----------
 SDL_Surface* SDLWindowWrapper::loadSurface(string path){
+    // Optimized surface that matches the window surface format
+    SDL_Surface* optimizedSurface = nullptr;
     //Load image at specified path
     SDL_Surface* loadedSurface = SDL_LoadBMP(path.c_str());
-    if(loadedSurface == NULL){
+    if(!loadedSurface){
         fprintf(stderr, "Unable to load image %s! SDL Error: %s\n", path.c_str(), SDL_GetError() );
-        loadedSurface = nullptr;
+    } else {
+        // Convert the loaded image to match the window surface format
+        optimizedSurface = SDL_ConvertSurface(loadedSurface, windowSurface->format, 0);
+        if(!optimizedSurface){
+            fprintf(stderr, "Unable to optimize image %s! SDL Error: %s\n", path.c_str(), SDL_GetError() );
+        }
+        SDL_FreeSurface( loadedSurface );
     }
-    return loadedSurface;
+    return optimizedSurface;
 }
 
 //---------- PRIVATE UTILITIES ----------
@@ -241,7 +283,7 @@ bool SDLWindowWrapper::init(string title){
             return false;
         } else {
             // Get the window surface
-            screenSurface = SDL_GetWindowSurface(window);
+            windowSurface = SDL_GetWindowSurface(window);
         }
     }
     return true;
