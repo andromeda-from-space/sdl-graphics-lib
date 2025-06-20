@@ -6,11 +6,11 @@
 //---------- SDLWindowWrapper ----------------------------------------
 //--------------------------------------------------------------------
 //---------- CONSTRUCTORS & DESTRUCTOR ----------
-SDLWindowWrapper::SDLWindowWrapper() : screenWidth(SCREEN_WIDTH), screenHeight(SCREEN_HEIGHT), window(nullptr), windowSurface(nullptr){
+SDLWindowWrapper::SDLWindowWrapper() : screenWidth(SCREEN_WIDTH), screenHeight(SCREEN_HEIGHT), window(nullptr), renderer(nullptr), windowSurface(nullptr){
     init("SDL Window");
 }
 
-SDLWindowWrapper::SDLWindowWrapper(int width, int height, string title) : screenWidth(width), screenHeight(height), window(nullptr), windowSurface(nullptr){
+SDLWindowWrapper::SDLWindowWrapper(int width, int height, string title) : screenWidth(width), screenHeight(height), window(nullptr), renderer(nullptr), windowSurface(nullptr){
     init(title);
 }
 
@@ -29,8 +29,10 @@ SDLWindowWrapper::~SDLWindowWrapper(){
     windowSurface = nullptr;
 
     // Destroy window
+    SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     window = nullptr;
+    renderer = nullptr;
 
     // Quit SDL Subsystems
     IMG_Quit();
@@ -248,7 +250,40 @@ void SDLWindowWrapper::lesson6(){
 }
 
 void SDLWindowWrapper::lesson7(){
-    // TODO
+    // Nominally part of init()
+	// Load splash image
+	SDL_Texture* gTexture = nullptr;
+    gTexture = loadTexture( "texture.png" );
+	if(gTexture){
+        // Main loop
+        // The current event
+        SDL_Event e;
+        // Flag for quitting
+        bool quit = false;
+        while( quit == false ){
+            // Remove all events from the queue
+            while( SDL_PollEvent( &e ) ){
+                // Here is where event processing goes
+                if( e.type == SDL_QUIT ){
+                    quit = true;
+                }
+                
+                // Clear screen
+				SDL_RenderClear(renderer);
+
+				// Render texture to screen
+				SDL_RenderCopy(renderer, gTexture, NULL, NULL );
+
+				// Update screen
+				SDL_RenderPresent(renderer);
+            }
+        }
+    }
+    
+    // Nominally part of close()
+    // Deallocate surface
+	SDL_DestroyTexture( gTexture );
+	gTexture = nullptr;
 }
 
 void SDLWindowWrapper::lesson8(){
@@ -294,6 +329,24 @@ SDL_Surface* SDLWindowWrapper::loadSurface(string path){
     return optimizedSurface;
 }
 
+SDL_Texture* SDLWindowWrapper::loadTexture(string path){
+    // Texture to load the image into
+    SDL_Texture* newTexture = nullptr;
+    // Load image at specified path as a surface
+    SDL_Surface* loadedSurface = IMG_Load(path.c_str());
+    if(!loadedSurface){
+        fprintf(stderr, "Unable to load image %s! SDL Error: %s\n", path.c_str(), IMG_GetError() );
+    } else {
+        // Convert the loaded image to into a texture
+        newTexture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
+        if(!newTexture){
+            fprintf(stderr, "Unable to optimize image %s! SDL Error: %s\n", path.c_str(), SDL_GetError() );
+        }
+        SDL_FreeSurface( loadedSurface );
+    }
+    return newTexture;
+}
+
 //---------- PRIVATE UTILITIES ----------
 bool SDLWindowWrapper::init(string title){
     if(SDL_Init(SDL_INIT_VIDEO) < 0){
@@ -308,15 +361,26 @@ bool SDLWindowWrapper::init(string title){
             // TODO - exceptions?
             return false;
         } else {
-            // Initialize the SDL_image library
-            int imgFlags = IMG_INIT_PNG;
-            if(!(IMG_Init(imgFlags) & imgFlags)){
-                fprintf(stderr, "SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
-                // TODO - exceptions?
-                return false;
-            } else {
-                // Get the window surface
-                windowSurface = SDL_GetWindowSurface(window);
+            //Create renderer for window
+			renderer = SDL_CreateRenderer( window, -1, SDL_RENDERER_ACCELERATED );
+			if(!renderer)
+			{
+				fprintf(stderr, "Renderer could not be created! SDL Error: %s\n", SDL_GetError() );
+				return false;
+			} else {
+                //Initialize renderer color
+				SDL_SetRenderDrawColor( renderer, 0xFF, 0xFF, 0xFF, 0xFF );
+
+                // Initialize the SDL_image library
+                int imgFlags = IMG_INIT_PNG;
+                if(!(IMG_Init(imgFlags) & imgFlags)){
+                    fprintf(stderr, "SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
+                    // TODO - exceptions?
+                    return false;
+                } else {
+                    // Get the window surface
+                    windowSurface = SDL_GetWindowSurface(window);
+                }
             }
         }
     }

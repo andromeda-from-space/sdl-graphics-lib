@@ -65,7 +65,10 @@ class SDLWindowWrapper {
 
         //---------- UTILITIES ----------
         // Load function for bmp images
+        // --DEPRECATED--
         SDL_Surface* loadSurface(string path);
+        // Load textures as opposed to surfaces for hardware rendering
+        SDL_Texture* loadTexture(string path);
     private:
         // Width of the screen
         int screenWidth;
@@ -73,7 +76,10 @@ class SDLWindowWrapper {
         int screenHeight;
         // Pointer for the SDL_Window
         SDL_Window* window;
+        // Renderer for the engine
+        SDL_Renderer* renderer;
         // Pointer for the SDL_Surface
+        // --DEPRECATED--
         SDL_Surface* windowSurface;
 
         //---------- PRIVATE UTILITIES ----------
