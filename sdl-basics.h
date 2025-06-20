@@ -104,6 +104,8 @@ class SDLWindowWrapper {
         // Load textures as opposed to surfaces for hardware rendering
         // --DEPRECATED--
         SDL_Texture* loadTexture(string path);
+        // Saves what's currently in the window
+        void saveImg(string path);
     private:
         // Width of the screen
         int screenWidth;
@@ -139,6 +141,11 @@ class SDLTextureWrapper {
         void render(SDL_Renderer* renderer, int x, int y, SDL_Rect* clip = NULL);
         // Performs color modulation which multiplies the colors in the texture by the fraction val / 255
         void setColor(Uint8 red, Uint8 green, Uint8 blue);
+        // Set the value of the alpha channel
+        void setAlpha(Uint8 alpha);
+        // Set the blend mode of the texture
+        void setBlendMode(SDL_BlendMode blending);
+
         //---------- ACCESSORS ----------
         int getWidth();
         int getHeight();

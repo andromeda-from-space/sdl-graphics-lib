@@ -494,7 +494,7 @@ void SDLWindowWrapper::lesson11(){
 }
 
 void SDLWindowWrapper::lesson12(){
-     // Loading flag
+    // Loading flag
     bool success = true;
 
     // Load the sprite sheet
@@ -564,7 +564,74 @@ void SDLWindowWrapper::lesson12(){
 }
 
 void SDLWindowWrapper::lesson13(){
-    // TODO
+    // Loading flag
+    bool success = true;
+
+    // Load the sprite sheet
+    SDLTextureWrapper fadein;
+    SDLTextureWrapper fadeout;
+
+    // Load the images
+    success = fadein.loadFromFile(renderer, "fadein.png");
+    if(success){
+        success = fadeout.loadFromFile(renderer, "fadeout.png");
+    }
+
+    // If sucessfully loaded
+    if(success){
+        // Set the blend mode on the texture being faded out
+        fadeout.setBlendMode( SDL_BLENDMODE_BLEND );
+
+        // The current event
+        SDL_Event e;
+        // Flag for quitting
+        bool quit = false;
+
+        // Color modulation colors
+        Uint8 alpha = 255;
+
+        // Main loop
+        while( quit == false ){
+            // Remove all events from the queue
+            while( SDL_PollEvent( &e ) ){
+                // Here is where event processing goes
+                if( e.type == SDL_QUIT ){
+                    quit = true;
+                } else if(e.type == SDL_KEYDOWN){
+                    switch(e.key.keysym.sym){
+                        case SDLK_w:
+                            if(alpha + 32 > 255){
+                                alpha = 255;
+                            } else {
+                                alpha += 32;
+                            }
+                            break;
+                        case SDLK_s:
+                            if(alpha - 32 < 0){
+                                alpha = 0;
+                            } else {
+                                alpha -= 32;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+                
+            // Clear screen
+            SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+            SDL_RenderClear(renderer);
+
+            // Render
+            fadein.render(renderer, 0, 0);
+            fadeout.setAlpha(alpha);
+            fadeout.render(renderer, 0, 0);
+
+            // Update screen
+            SDL_RenderPresent(renderer);
+        }
+    }
 }
 
 void SDLWindowWrapper::lesson14(){
@@ -670,6 +737,13 @@ SDL_Texture* SDLWindowWrapper::loadTexture(string path){
         SDL_FreeSurface( loadedSurface );
     }
     return newTexture;
+}
+
+void SDLWindowWrapper::saveImg(string path){
+    // Get the window surface
+    SDL_Surface* currSurface = SDL_GetWindowSurface(window);
+    // Save
+    IMG_SavePNG(currSurface, path.c_str());
 }
 
 //---------- PRIVATE UTILITIES ----------
@@ -793,8 +867,15 @@ void SDLTextureWrapper::render(SDL_Renderer* renderer, int x, int y, SDL_Rect* c
 }
 
 void SDLTextureWrapper::setColor(Uint8 red, Uint8 green, Uint8 blue){
-    //Modulate texture
     SDL_SetTextureColorMod(texture, red, green, blue);
+}
+
+void SDLTextureWrapper::setAlpha(Uint8 alpha){
+    SDL_SetTextureAlphaMod(texture, alpha);
+}
+
+void SDLTextureWrapper::setBlendMode(SDL_BlendMode blending){
+    SDL_SetTextureBlendMode(texture, blending);
 }
 
 //---------- ACCESSORS ----------
