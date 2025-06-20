@@ -12,6 +12,17 @@
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
 
+// Lesson 4 - Key Press Enumeration
+//Key press surfaces constants
+enum KeyPressSurfaces {
+    KEY_PRESS_SURFACE_DEFAULT,
+    KEY_PRESS_SURFACE_UP,
+    KEY_PRESS_SURFACE_DOWN,
+    KEY_PRESS_SURFACE_LEFT,
+    KEY_PRESS_SURFACE_RIGHT,
+    KEY_PRESS_SURFACE_TOTAL
+};
+
 using namespace std;
 
 class SDLWindowWrapper {
@@ -51,6 +62,10 @@ class SDLWindowWrapper {
         void lesson12();
         // Lesson 13 - Alpha Blending
         void lesson13();
+
+        //---------- UTILITIES ----------
+        // Load function for bmp images
+        SDL_Surface* loadSurface(string path);
     private:
         // Width of the screen
         int screenWidth;

@@ -1,5 +1,5 @@
 COMPILER = g++
-CFLAGS = -Wall
+CFLAGS = -Wall -g
 LFLAGS = -lSDL2
 PROG1 = sdl-test
 OBJ1 = sdl-basics
