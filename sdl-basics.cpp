@@ -53,13 +53,13 @@ void SDLWindowWrapper::lesson1(){
 
 void SDLWindowWrapper::lesson2(){
     // Nominally prt of init()
-	// Load splash image
-	SDL_Surface* gHelloWorld = nullptr;
+    // Load splash image
+    SDL_Surface* gHelloWorld = nullptr;
     gHelloWorld = SDL_LoadBMP( "hello_world.bmp" );
-	if(!gHelloWorld)
-	{
-		fprintf(stderr, "Unable to load image %s! SDL Error: %s\n", "02_getting_an_image_on_the_screen/hello_world.bmp", SDL_GetError());
-	} else {
+    if(!gHelloWorld)
+    {
+        fprintf(stderr, "Unable to load image %s! SDL Error: %s\n", "02_getting_an_image_on_the_screen/hello_world.bmp", SDL_GetError());
+    } else {
         // Main loop
         //Apply the image
         SDL_BlitSurface( gHelloWorld, NULL, windowSurface, NULL );
@@ -73,19 +73,19 @@ void SDLWindowWrapper::lesson2(){
     
     // Nominally part of close()
     // Deallocate surface
-	SDL_FreeSurface( gHelloWorld );
-	gHelloWorld = NULL;
+    SDL_FreeSurface( gHelloWorld );
+    gHelloWorld = NULL;
 }
 
 void SDLWindowWrapper::lesson3(){
     // Nominally prt of init()
-	// Load splash image
-	SDL_Surface* gHelloWorld = nullptr;
+    // Load splash image
+    SDL_Surface* gHelloWorld = nullptr;
     gHelloWorld = SDL_LoadBMP( "hello_world.bmp" );
-	if(!gHelloWorld)
-	{
-		fprintf(stderr, "Unable to load image %s! SDL Error: %s\n", "02_getting_an_image_on_the_screen/hello_world.bmp", SDL_GetError());
-	} else {
+    if(!gHelloWorld)
+    {
+        fprintf(stderr, "Unable to load image %s! SDL Error: %s\n", "02_getting_an_image_on_the_screen/hello_world.bmp", SDL_GetError());
+    } else {
         // Main loop
         // The current event
         SDL_Event e;
@@ -111,8 +111,8 @@ void SDLWindowWrapper::lesson3(){
     
     // Nominally part of close()
     // Deallocate surface
-	SDL_FreeSurface( gHelloWorld );
-	gHelloWorld = NULL;
+    SDL_FreeSurface( gHelloWorld );
+    gHelloWorld = NULL;
 }
 
 void SDLWindowWrapper::lesson4(){
@@ -126,10 +126,10 @@ void SDLWindowWrapper::lesson4(){
         "left.bmp",
         "right.bmp"
     };
-	// Loading flags
+    // Loading flags
     bool allLoaded = true;
     // Load all images
-	SDL_Surface* gImages[KEY_PRESS_SURFACE_TOTAL];
+    SDL_Surface* gImages[KEY_PRESS_SURFACE_TOTAL];
     int count = 0;
     while(allLoaded && count < KEY_PRESS_SURFACE_TOTAL){
         gImages[count] = loadSurface(filenames[count]);
@@ -190,10 +190,10 @@ void SDLWindowWrapper::lesson4(){
 
 void SDLWindowWrapper::lesson5(){
         // Nominally prt of init()
-	// Load splash image
-	SDL_Surface* gImageStretch = nullptr;
+    // Load splash image
+    SDL_Surface* gImageStretch = nullptr;
     gImageStretch = loadSurface( "stretch.bmp" );
-	if(gImageStretch){
+    if(gImageStretch){
         // Blit the image with the stretch
         SDL_Rect stretchRect;
         stretchRect.x = 0;
@@ -222,14 +222,14 @@ void SDLWindowWrapper::lesson5(){
     
     // Nominally part of close()
     // Deallocate surface
-	SDL_FreeSurface( gImageStretch );
-	gImageStretch = nullptr;
+    SDL_FreeSurface( gImageStretch );
+    gImageStretch = nullptr;
 }
 
 void SDLWindowWrapper::lesson6(){
     // Nominally part of init()
-	// Load PNG
-	SDL_Surface* gPNG = nullptr;
+    // Load PNG
+    SDL_Surface* gPNG = nullptr;
     gPNG = loadSurface( "loaded.png" );
     if(gPNG) {
         // Main loop
@@ -245,16 +245,16 @@ void SDLWindowWrapper::lesson6(){
     
     // Nominally part of close()
     // Deallocate surface
-	SDL_FreeSurface( gPNG );
-	gPNG = nullptr;
+    SDL_FreeSurface( gPNG );
+    gPNG = nullptr;
 }
 
 void SDLWindowWrapper::lesson7(){
     // Nominally part of init()
-	// Load splash image
-	SDL_Texture* gTexture = nullptr;
+    // Load splash image
+    SDL_Texture* gTexture = nullptr;
     gTexture = loadTexture( "texture.png" );
-	if(gTexture){
+    if(gTexture){
         // Main loop
         // The current event
         SDL_Event e;
@@ -269,21 +269,21 @@ void SDLWindowWrapper::lesson7(){
                 }
                 
                 // Clear screen
-				SDL_RenderClear(renderer);
+                SDL_RenderClear(renderer);
 
-				// Render texture to screen
-				SDL_RenderCopy(renderer, gTexture, NULL, NULL );
+                // Render texture to screen
+                SDL_RenderCopy(renderer, gTexture, NULL, NULL );
 
-				// Update screen
-				SDL_RenderPresent(renderer);
+                // Update screen
+                SDL_RenderPresent(renderer);
             }
         }
     }
     
     // Nominally part of close()
     // Deallocate surface
-	SDL_DestroyTexture( gTexture );
-	gTexture = nullptr;
+    SDL_DestroyTexture( gTexture );
+    gTexture = nullptr;
 }
 
 void SDLWindowWrapper::lesson8(){
@@ -331,7 +331,70 @@ void SDLWindowWrapper::lesson8(){
 }
 
 void SDLWindowWrapper::lesson9(){
-    // TODO
+    // Nominally part of init()
+    // Load splash image
+    SDL_Texture* gTexture = nullptr;
+    gTexture = loadTexture( "viewport.png" );
+    if(gTexture){
+        // Main loop
+        // The current event
+        SDL_Event e;
+        // Flag for quitting
+        bool quit = false;
+        while( quit == false ){
+            // Remove all events from the queue
+            while( SDL_PollEvent( &e ) ){
+                // Here is where event processing goes
+                if( e.type == SDL_QUIT ){
+                    quit = true;
+                }
+
+                // Clear screen
+                SDL_RenderClear(renderer);
+                
+                //Top left corner viewport
+                SDL_Rect topLeftViewport;
+                topLeftViewport.x = 0;
+                topLeftViewport.y = 0;
+                topLeftViewport.w = SCREEN_WIDTH / 2;
+                topLeftViewport.h = SCREEN_HEIGHT / 2;
+                SDL_RenderSetViewport(renderer, &topLeftViewport);
+                
+                //Render texture to screen
+                SDL_RenderCopy(renderer, gTexture, NULL, NULL);
+                
+                //Top right viewport
+                SDL_Rect topRightViewport;
+                topRightViewport.x = SCREEN_WIDTH / 2;
+                topRightViewport.y = 0;
+                topRightViewport.w = SCREEN_WIDTH / 2;
+                topRightViewport.h = SCREEN_HEIGHT / 2;
+                SDL_RenderSetViewport(renderer, &topRightViewport);
+                
+                //Render texture to screen
+                SDL_RenderCopy(renderer, gTexture, NULL, NULL);
+
+                //Bottom viewport
+                SDL_Rect bottomViewport;
+                bottomViewport.x = 0;
+                bottomViewport.y = SCREEN_HEIGHT / 2;
+                bottomViewport.w = SCREEN_WIDTH;
+                bottomViewport.h = SCREEN_HEIGHT / 2;
+                SDL_RenderSetViewport(renderer, &bottomViewport);
+                
+                //Render texture to screen
+                SDL_RenderCopy(renderer, gTexture, NULL, NULL);
+
+                // Update screen
+                SDL_RenderPresent(renderer);
+            }
+        }
+    }
+    
+    // Nominally part of close()
+    // Deallocate surface
+    SDL_DestroyTexture( gTexture );
+    gTexture = nullptr;
 }
 
 void SDLWindowWrapper::lesson10(){
@@ -402,14 +465,14 @@ bool SDLWindowWrapper::init(string title){
             return false;
         } else {
             //Create renderer for window
-			renderer = SDL_CreateRenderer( window, -1, SDL_RENDERER_ACCELERATED );
-			if(!renderer)
-			{
-				fprintf(stderr, "Renderer could not be created! SDL Error: %s\n", SDL_GetError() );
-				return false;
-			} else {
+            renderer = SDL_CreateRenderer( window, -1, SDL_RENDERER_ACCELERATED );
+            if(!renderer)
+            {
+                fprintf(stderr, "Renderer could not be created! SDL Error: %s\n", SDL_GetError() );
+                return false;
+            } else {
                 //Initialize renderer color
-				SDL_SetRenderDrawColor( renderer, 0xFF, 0xFF, 0xFF, 0xFF );
+                SDL_SetRenderDrawColor( renderer, 0xFF, 0xFF, 0xFF, 0xFF );
 
                 // Initialize the SDL_image library
                 int imgFlags = IMG_INIT_PNG;
