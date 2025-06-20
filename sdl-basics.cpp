@@ -1,4 +1,4 @@
-#include <unistd.h>
+#include <SDL2/SDL_image.h>
 
 #include "sdl-basics.h"
 
@@ -24,9 +24,16 @@ SDLWindowWrapper& SDLWindowWrapper::operator=(const SDLWindowWrapper & other){
 }
 
 SDLWindowWrapper::~SDLWindowWrapper(){
+    // Destroy the surface
+    SDL_FreeSurface(windowSurface);
+    windowSurface = nullptr;
+
     // Destroy window
     SDL_DestroyWindow(window);
+    window = nullptr;
+
     // Quit SDL Subsystems
+    IMG_Quit();
     SDL_Quit();
 }
 
@@ -218,7 +225,26 @@ void SDLWindowWrapper::lesson5(){
 }
 
 void SDLWindowWrapper::lesson6(){
-    // TODO
+    // Nominally part of init()
+	// Load PNG
+	SDL_Surface* gPNG = nullptr;
+    gPNG = loadSurface( "loaded.png" );
+    if(gPNG) {
+        // Main loop
+        //Apply the image
+        SDL_BlitSurface( gPNG, NULL, windowSurface, NULL );
+        
+        //Update the surface
+        SDL_UpdateWindowSurface(window);
+
+        //Hack to get window to stay up
+        SDL_Event e; bool quit = false; while( quit == false ){ while( SDL_PollEvent( &e ) ){ if( e.type == SDL_QUIT ) quit = true; } }
+    }
+    
+    // Nominally part of close()
+    // Deallocate surface
+	SDL_FreeSurface( gPNG );
+	gPNG = nullptr;
 }
 
 void SDLWindowWrapper::lesson7(){
@@ -254,9 +280,9 @@ SDL_Surface* SDLWindowWrapper::loadSurface(string path){
     // Optimized surface that matches the window surface format
     SDL_Surface* optimizedSurface = nullptr;
     //Load image at specified path
-    SDL_Surface* loadedSurface = SDL_LoadBMP(path.c_str());
+    SDL_Surface* loadedSurface = IMG_Load(path.c_str());
     if(!loadedSurface){
-        fprintf(stderr, "Unable to load image %s! SDL Error: %s\n", path.c_str(), SDL_GetError() );
+        fprintf(stderr, "Unable to load image %s! SDL Error: %s\n", path.c_str(), IMG_GetError() );
     } else {
         // Convert the loaded image to match the window surface format
         optimizedSurface = SDL_ConvertSurface(loadedSurface, windowSurface->format, 0);
@@ -282,8 +308,16 @@ bool SDLWindowWrapper::init(string title){
             // TODO - exceptions?
             return false;
         } else {
-            // Get the window surface
-            windowSurface = SDL_GetWindowSurface(window);
+            // Initialize the SDL_image library
+            int imgFlags = IMG_INIT_PNG;
+            if(!(IMG_Init(imgFlags) & imgFlags)){
+                fprintf(stderr, "SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
+                // TODO - exceptions?
+                return false;
+            } else {
+                // Get the window surface
+                windowSurface = SDL_GetWindowSurface(window);
+            }
         }
     }
     return true;
