@@ -2,5 +2,4 @@
 *.o
 sdl-test
 # Ignore the tutorial files
-*.bmp
 scratch.txt
