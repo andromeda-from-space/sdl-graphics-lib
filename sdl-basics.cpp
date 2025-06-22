@@ -1194,7 +1194,11 @@ buttonSpriteSheet(nullptr), spriteClips(spriteClips), numSprites(numSprites) {
     buttonSpriteSheet = new SDLTextureWrapper();
     loadFromFile(renderer, spriteSheet);
 
-    // TODO - Copy the sprite clips
+    // Copy the sprite clips
+    this->spriteClips = new SDL_Rect[numSprites];
+    for(int i = 0; i < numSprites; i++){
+        this->spriteClips[i] = spriteClips[i];
+    }
 }
 
 SDLButton::SDLButton(const SDLButton& other){
@@ -1213,13 +1217,11 @@ SDLButton::~SDLButton(){
         buttonSpriteSheet = nullptr;
     }
 
-    /*
-    // Clean up the sprite clips
+    // Clean up the spriteClips
     if(spriteClips){
         delete[](spriteClips);
         spriteClips = nullptr;
     }
-    */
 }
 
 //---------- UTILITIES ----------
