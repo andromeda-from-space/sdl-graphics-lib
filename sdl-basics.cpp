@@ -1,4 +1,5 @@
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_mixer.h>
 
 #include "sdl-basics.h"
 
@@ -58,10 +59,10 @@ void SDLWindowWrapper::lesson2(){
     // Nominally prt of init()
     // Load splash image
     SDL_Surface* gHelloWorld = nullptr;
-    gHelloWorld = SDL_LoadBMP( "hello_world.bmp" );
+    gHelloWorld = SDL_LoadBMP( "media/hello_world.bmp" );
     if(!gHelloWorld)
     {
-        fprintf(stderr, "Unable to load image %s! SDL Error: %s\n", "02_getting_an_image_on_the_screen/hello_world.bmp", SDL_GetError());
+        fprintf(stderr, "Unable to load image %s! SDL Error: %s\n", "media/hello_world.bmp", SDL_GetError());
     } else {
         // Main loop
         //Apply the image
@@ -84,10 +85,10 @@ void SDLWindowWrapper::lesson3(){
     // Nominally prt of init()
     // Load splash image
     SDL_Surface* gHelloWorld = nullptr;
-    gHelloWorld = SDL_LoadBMP( "hello_world.bmp" );
+    gHelloWorld = SDL_LoadBMP( "media/hello_world.bmp" );
     if(!gHelloWorld)
     {
-        fprintf(stderr, "Unable to load image %s! SDL Error: %s\n", "02_getting_an_image_on_the_screen/hello_world.bmp", SDL_GetError());
+        fprintf(stderr, "Unable to load image %s! SDL Error: %s\n", "media/hello_world.bmp", SDL_GetError());
     } else {
         // Main loop
         // The current event
@@ -123,11 +124,11 @@ void SDLWindowWrapper::lesson4(){
     // Nominally prt of init()
     // Array of file names for loading
     std::string filenames[] = {
-        "press.bmp",
-        "up.bmp",
-        "down.bmp",
-        "left.bmp",
-        "right.bmp"
+        "media/press.bmp",
+        "media/up.bmp",
+        "media/down.bmp",
+        "media/left.bmp",
+        "media/right.bmp"
     };
     // Loading flags
     bool allLoaded = true;
@@ -195,7 +196,7 @@ void SDLWindowWrapper::lesson5(){
         // Nominally prt of init()
     // Load splash image
     SDL_Surface* gImageStretch = nullptr;
-    gImageStretch = loadSurface( "stretch.bmp" );
+    gImageStretch = loadSurface( "media/stretch.bmp" );
     if(gImageStretch){
         // Blit the image with the stretch
         SDL_Rect stretchRect;
@@ -233,7 +234,7 @@ void SDLWindowWrapper::lesson6(){
     // Nominally part of init()
     // Load PNG
     SDL_Surface* gPNG = nullptr;
-    gPNG = loadSurface( "loaded.png" );
+    gPNG = loadSurface( "media/loaded.png" );
     if(gPNG) {
         // Main loop
         //Apply the image
@@ -337,7 +338,7 @@ void SDLWindowWrapper::lesson9(){
     // Nominally part of init()
     // Load splash image
     SDL_Texture* gTexture = nullptr;
-    gTexture = loadTexture( "viewport.png" );
+    gTexture = loadTexture( "media/viewport.png" );
     if(gTexture){
         // Main loop
         // The current event
@@ -409,11 +410,11 @@ void SDLWindowWrapper::lesson10(){
     SDLTextureWrapper foo;
 
     // Load the images
-    success = background.loadFromFile(renderer, "background.png");
+    success = background.loadFromFile(renderer, "media/background.png");
     if(!success){
         return;
     }
-    success = foo.loadFromFile(renderer, "foo.png");
+    success = foo.loadFromFile(renderer, "media/foo.png");
 
     if(success){
         // Main loop
@@ -454,7 +455,7 @@ void SDLWindowWrapper::lesson11(){
     SDLTextureWrapper spriteSheet;
 
     // Load the images
-    success = spriteSheet.loadFromFile(renderer, "dots.png");
+    success = spriteSheet.loadFromFile(renderer, "media/dots.png");
 
     // If sucessfully loaded
     if(success){
@@ -504,7 +505,7 @@ void SDLWindowWrapper::lesson12(){
     SDLTextureWrapper colorMap;
 
     // Load the images
-    success = colorMap.loadFromFile(renderer, "colors.png");
+    success = colorMap.loadFromFile(renderer, "media/colors.png");
 
     // If sucessfully loaded
     if(success){
@@ -575,9 +576,9 @@ void SDLWindowWrapper::lesson13(){
     SDLTextureWrapper fadeout;
 
     // Load the images
-    success = fadein.loadFromFile(renderer, "fadein.png");
+    success = fadein.loadFromFile(renderer, "media/fadein.png");
     if(success){
-        success = fadeout.loadFromFile(renderer, "fadeout.png");
+        success = fadeout.loadFromFile(renderer, "media/fadeout.png");
     }
 
     // If sucessfully loaded
@@ -645,7 +646,7 @@ void SDLWindowWrapper::lesson14(){
     SDLTextureWrapper gSpriteSheet;
 
     // Load the images
-    success = gSpriteSheet.loadFromFile(renderer, "foo2.png");
+    success = gSpriteSheet.loadFromFile(renderer, "media/foo2.png");
 
     // If sucessfully loaded
     if(success){
@@ -718,7 +719,7 @@ void SDLWindowWrapper::lesson15(){
     SDLTextureWrapper arrow;
 
     // Load the images
-    success = arrow.loadFromFile(renderer, "arrow.png");
+    success = arrow.loadFromFile(renderer, "media/arrow.png");
 
     // If sucessfully loaded
     if(success){
@@ -790,7 +791,7 @@ void SDLWindowWrapper::lesson16(){
     SDLTextBox textBox;
 
     // Load the images
-    success = textBox.loadFromFile("lazy.ttf", 28);
+    success = textBox.loadFromFile("media/lazy.ttf", 28);
 
     if(success){
         // Main loop
@@ -831,7 +832,7 @@ void SDLWindowWrapper::lesson17(){
     }
 
     // Make the button
-    SDLButton theButton = SDLButton(renderer, "button.png", spriteClips, BUTTON_SPRITE_TOTAL);
+    SDLButton theButton = SDLButton(renderer, "media/button.png", spriteClips, BUTTON_SPRITE_TOTAL);
 
     // The current event
     SDL_Event e;
@@ -872,18 +873,18 @@ void SDLWindowWrapper::lesson18(){
     SDLTextureWrapper pressTexture = SDLTextureWrapper();
 
     // Try to load
-    bool success = upTexture.loadFromFile(renderer, "up.png");
+    bool success = upTexture.loadFromFile(renderer, "media/up.png");
     if(success){
-        success = downTexture.loadFromFile(renderer, "down.png");
+        success = downTexture.loadFromFile(renderer, "media/down.png");
     }
     if(success){
-        success = leftTexture.loadFromFile(renderer, "left.png");
+        success = leftTexture.loadFromFile(renderer, "media/left.png");
     }
     if(success){
-        success = rightTexture.loadFromFile(renderer, "right.png");
+        success = rightTexture.loadFromFile(renderer, "media/right.png");
     }
     if(success){
-        success = pressTexture.loadFromFile(renderer, "press.png");
+        success = pressTexture.loadFromFile(renderer, "media/press.png");
     }
 
     if(success){
@@ -938,7 +939,178 @@ void SDLWindowWrapper::lesson20(){
 }
 
 void SDLWindowWrapper::lesson21(){
-    // TODO
+    // Mix_Music - music file - auto loops
+    // - Mix_LoadMUS - load music file
+    // - Mix_PlayingMusic - is music is play
+    // - Mix_Play - start the music from the beginning
+    // - Mix_PausedMusic - is music paused?
+    // - Mix_Pause - pause music
+    // - Mix_Resume - resume music
+    // - Mix_HaltMusic - stops music - no unpausing
+    // Mix_Chunk - sound effect
+    // - Mix_LoadWAV - load music file (.wav)
+    // - Mix_PlayChannel - plays the sound effect, channel, effect, number of times to repeat
+
+    // Flag for everything loading successfully
+    bool success = true;
+
+    // Initialize SDL_mixer - move to init if mixer is to be included in general game
+    if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) < 0 ){
+        printf( "SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError() );
+        success = false;
+    } else {
+        // Attempt to load the sounds
+        if(success){
+            // The music that will be played
+            Mix_Music* gMusic = nullptr;
+
+            //The sound effects that will be used
+            Mix_Chunk* gScratch = nullptr;
+            Mix_Chunk* gHigh = nullptr;
+            Mix_Chunk* gMedium = nullptr;
+            Mix_Chunk* gLow = nullptr;
+
+            gMusic = Mix_LoadMUS( "media/beat.wav" );
+            if(!gMusic){
+                printf( "Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError() );
+                success = false;
+            }
+
+            gScratch = Mix_LoadWAV( "media/scratch.wav" );
+            if(!gScratch){
+                printf( "Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError() );
+                success = false;
+            }
+
+            gHigh = Mix_LoadWAV( "media/high.wav" );
+            if(!gHigh){
+                printf( "Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError() );
+                success = false;
+            }
+
+            gMedium = Mix_LoadWAV( "media/medium.wav" );
+            if(!gMedium){
+                printf( "Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError() );
+                success = false;
+            }
+
+            gLow = Mix_LoadWAV( "media/low.wav" );
+            if(!gLow){
+                printf( "Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError() );
+                success = false;
+            }
+
+            // Load the visual
+            if(success){
+                SDLTextureWrapper gPromptTexture = SDLTextureWrapper();
+                if(!gPromptTexture.loadFromFile(renderer, "media/prompt.png")){
+                    printf( "Failed to load prompt texture!\n" );
+                    success = false;
+                }
+
+                // Main Loop
+                if(success){
+                    // The current event
+                    SDL_Event e;
+                    // Flag for quitting
+                    bool quit = false;
+
+                    // Main Loop
+                    while( !quit ) {
+                        //Handle events on queue
+                        while(SDL_PollEvent( &e ) != 0) {
+                            //User requests quit
+                            if(e.type == SDL_QUIT) {
+                                quit = true;
+                            } else if( e.type == SDL_KEYDOWN ){
+                                switch( e.key.keysym.sym ){
+                                    //Play high sound effect
+                                    case SDLK_1:
+                                        Mix_PlayChannel( -1, gHigh, 0 );
+                                        break;
+                                    
+                                    //Play medium sound effect
+                                    case SDLK_2:
+                                        Mix_PlayChannel( -1, gMedium, 0 );
+                                        break;
+                                    
+                                    //Play low sound effect
+                                    case SDLK_3:
+                                        Mix_PlayChannel( -1, gLow, 0 );
+                                        break;
+                                    
+                                    //Play scratch sound effect
+                                    case SDLK_4:
+                                        Mix_PlayChannel( -1, gScratch, 0 );
+                                        break;
+                                    
+                                    // Start or pause/resume the music
+                                    case SDLK_9:
+                                        if( Mix_PlayingMusic() == 0 ){
+                                            // Play the music
+                                            Mix_PlayMusic( gMusic, -1 );
+                                        } else {
+                                            if( Mix_PausedMusic() == 1 ) {
+                                                // Resume the music
+                                                Mix_ResumeMusic();
+                                            } else {
+                                                // Pause the music
+                                                Mix_PauseMusic();
+                                            }
+                                        }
+                                        break;
+                                        
+                                    // Stop the music
+                                    case SDLK_0:
+                                        Mix_HaltMusic();
+                                        break;
+
+                                    default:
+                                        break;
+
+                                }
+                            }
+                        }
+
+                        // Clear screen
+                        SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+                        SDL_RenderClear(renderer);
+
+                        // Render
+                        gPromptTexture.render(renderer, 0, 0);
+
+                        // Update screen
+                        SDL_RenderPresent(renderer);
+                    }
+                }
+            }
+
+            // Clean up audio files
+            if(gMusic){
+                Mix_FreeMusic(gMusic);
+                gMusic = nullptr;
+            }
+            if(gScratch){
+                Mix_FreeChunk(gScratch);
+                gScratch = nullptr;
+            }
+            if(gHigh){
+                Mix_FreeChunk(gHigh);
+                gHigh = nullptr;
+            }
+            if(gMedium){    
+                Mix_FreeChunk(gMedium);
+                gMedium = nullptr;
+            }
+            if(gLow){
+                Mix_FreeChunk(gLow);
+                gLow = nullptr; 
+            }
+        }
+
+        // Quit mixer subsystem
+        Mix_Quit();
+    }
 }
 
 void SDLWindowWrapper::lesson22(){

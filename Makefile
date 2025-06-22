@@ -1,6 +1,6 @@
 COMPILER = g++
 CFLAGS = -Wall -g
-LFLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf
+LFLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer
 PROG1 = sdl-test
 OBJ1 = sdl-basics
 
