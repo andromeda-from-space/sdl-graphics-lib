@@ -860,19 +860,81 @@ void SDLWindowWrapper::lesson17(){
         // Update screen
         SDL_RenderPresent(renderer);
     }
-    
 }
 
 void SDLWindowWrapper::lesson18(){
-    // TODO
+    // Load all images
+    SDLTextureWrapper* currentTexture;
+    SDLTextureWrapper upTexture = SDLTextureWrapper();
+    SDLTextureWrapper downTexture = SDLTextureWrapper();
+    SDLTextureWrapper leftTexture = SDLTextureWrapper();
+    SDLTextureWrapper rightTexture = SDLTextureWrapper();
+    SDLTextureWrapper pressTexture = SDLTextureWrapper();
+
+    // Try to load
+    bool success = upTexture.loadFromFile(renderer, "up.png");
+    if(success){
+        success = downTexture.loadFromFile(renderer, "down.png");
+    }
+    if(success){
+        success = leftTexture.loadFromFile(renderer, "left.png");
+    }
+    if(success){
+        success = rightTexture.loadFromFile(renderer, "right.png");
+    }
+    if(success){
+        success = pressTexture.loadFromFile(renderer, "press.png");
+    }
+
+    if(success){
+        // The current event
+        SDL_Event e;
+        // Flag for quitting
+        bool quit = false;
+
+        // Main Loop
+        while( !quit ) {
+            //Handle events on queue
+            while(SDL_PollEvent( &e ) != 0) {
+                //User requests quit
+                if(e.type == SDL_QUIT) {
+                    quit = true;
+                } else {
+                    const Uint8* currentKeyStates = SDL_GetKeyboardState( NULL );
+                    // Note - the scancode allows for international keyboards and uses the keyboard layout location of the key as opposed to the physical location of the key
+                    if( currentKeyStates[ SDL_SCANCODE_UP ] ){
+                        currentTexture = &upTexture;
+                    } else if( currentKeyStates[ SDL_SCANCODE_DOWN ] ){
+                        currentTexture = &downTexture;
+                    } else if( currentKeyStates[ SDL_SCANCODE_LEFT ] ){
+                        currentTexture = &leftTexture;
+                    } else if( currentKeyStates[ SDL_SCANCODE_RIGHT ] ){
+                        currentTexture = &rightTexture;
+                    } else{
+                        currentTexture = &pressTexture;
+                    }
+                }
+            }
+                
+            // Clear screen
+            SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+            SDL_RenderClear(renderer);
+
+            // Render
+            currentTexture->render(renderer, 0, 0);
+
+            // Update screen
+            SDL_RenderPresent(renderer);
+        }
+    }
 }
 
 void SDLWindowWrapper::lesson19(){
-    // TODO
+    // TODO - Need Gamepad
 }
 
 void SDLWindowWrapper::lesson20(){
-    // TODO
+    // TODO - Need Gamepad
 }
 
 void SDLWindowWrapper::lesson21(){
