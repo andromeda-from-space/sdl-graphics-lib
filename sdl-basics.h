@@ -138,7 +138,7 @@ class SDLTextureWrapper {
         // Deallocates the loaded image
         void free();
         // Renders the tecture ata given point with the provided renderer
-        void render(SDL_Renderer* renderer, int x, int y, SDL_Rect* clip = NULL);
+        void render(SDL_Renderer* renderer, int x, int y, SDL_Rect* clip = nullptr, double angle = 0.0, SDL_Point* center = nullptr, SDL_RendererFlip flip = SDL_FLIP_NONE );
         // Performs color modulation which multiplies the colors in the texture by the fraction val / 255
         void setColor(Uint8 red, Uint8 green, Uint8 blue);
         // Set the value of the alpha channel

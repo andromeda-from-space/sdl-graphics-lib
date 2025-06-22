@@ -635,11 +635,152 @@ void SDLWindowWrapper::lesson13(){
 }
 
 void SDLWindowWrapper::lesson14(){
-    // TODO
+    // Loading flag
+    bool success = true;
+
+    // Load the sprite sheet
+    SDLTextureWrapper gSpriteSheet;
+
+    // Load the images
+    success = gSpriteSheet.loadFromFile(renderer, "foo2.png");
+
+    // If sucessfully loaded
+    if(success){
+        // Create the clips for the sprite sheet
+        int frameCount = 4;
+        SDL_Rect gSpriteClips[frameCount];
+
+        //Set sprite clips
+        gSpriteClips[ 0 ].x =   0;
+        gSpriteClips[ 0 ].y =   0;
+        gSpriteClips[ 0 ].w =  64;
+        gSpriteClips[ 0 ].h = 205;
+
+        gSpriteClips[ 1 ].x =  64;
+        gSpriteClips[ 1 ].y =   0;
+        gSpriteClips[ 1 ].w =  64;
+        gSpriteClips[ 1 ].h = 205;
+        
+        gSpriteClips[ 2 ].x = 128;
+        gSpriteClips[ 2 ].y =   0;
+        gSpriteClips[ 2 ].w =  64;
+        gSpriteClips[ 2 ].h = 205;
+
+        gSpriteClips[ 3 ].x = 192;
+        gSpriteClips[ 3 ].y =   0;
+        gSpriteClips[ 3 ].w =  64;
+        gSpriteClips[ 3 ].h = 205;
+
+        // The current event
+        SDL_Event e;
+        // Flag for quitting
+        bool quit = false;
+
+        // Main loop
+        int currFrame = 0;
+        while( quit == false ){
+            // Remove all events from the queue
+            while( SDL_PollEvent( &e ) ){
+                // Here is where event processing goes
+                if( e.type == SDL_QUIT ){
+                    quit = true;
+                }
+            }
+                
+            // Clear screen
+            SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+            SDL_RenderClear(renderer);
+
+            // Render
+            gSpriteSheet.render(renderer, 0, 0, &gSpriteClips[currFrame]);
+
+            // Update screen
+            SDL_RenderPresent(renderer);
+            
+            // Increment the animation
+            currFrame++;
+            if(currFrame == frameCount){
+                currFrame = 0;
+            }
+            // Needs a timer so it doesn't referesh so quickly
+        }
+    }
 }
 
 void SDLWindowWrapper::lesson15(){
-    // TODO
+        // Loading flag
+    bool success = true;
+
+    // Load the sprite sheet
+    SDLTextureWrapper arrow;
+
+    // Load the images
+    success = arrow.loadFromFile(renderer, "arrow.png");
+
+    // If sucessfully loaded
+    if(success){
+        //Angle of rotation
+        double degrees = 0;
+
+        //Flip type
+        SDL_RendererFlip flipType = SDL_FLIP_NONE;
+
+        // The current event
+        SDL_Event e;
+        // Flag for quitting
+        bool quit = false;
+
+        // Main loop
+        while( quit == false ){
+            // Remove all events from the queue
+            while( SDL_PollEvent( &e ) ){
+                // Here is where event processing goes
+                if( e.type == SDL_QUIT ){
+                    quit = true;
+                } else if(e.type == SDL_KEYDOWN){
+                    switch(e.key.keysym.sym){
+                        case SDLK_a:
+                            degrees -= 60;
+                            break;
+                            
+                        case SDLK_d:
+                            degrees += 60;
+                            break;
+
+                        case SDLK_q:
+                            flipType = SDL_FLIP_HORIZONTAL;
+                            break;
+
+                        case SDLK_w:
+                            flipType = SDL_FLIP_NONE;
+                            break;
+
+                        case SDLK_e:
+                            flipType = SDL_FLIP_VERTICAL;
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+            }
+                
+            // Clear screen
+            SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+            SDL_RenderClear(renderer);
+
+            // Render
+            arrow.render(renderer, (screenHeight - arrow.getWidth()) / 2, (screenHeight - arrow.getHeight()) / 2, nullptr, degrees, nullptr, flipType);
+            // Note the center is the center of rotation, so if you choose something other than NULL
+
+            // Update screen
+            SDL_RenderPresent(renderer);
+        }
+    }
+
+
+
+
 }
 
 void SDLWindowWrapper::lesson16(){
@@ -761,7 +902,7 @@ bool SDLWindowWrapper::init(string title){
             return false;
         } else {
             //Create renderer for window
-            renderer = SDL_CreateRenderer( window, -1, SDL_RENDERER_ACCELERATED );
+            renderer = SDL_CreateRenderer( window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
             if(!renderer)
             {
                 fprintf(stderr, "Renderer could not be created! SDL Error: %s\n", SDL_GetError() );
@@ -852,7 +993,7 @@ void SDLTextureWrapper::free(){
     }
 }
 
-void SDLTextureWrapper::render(SDL_Renderer* renderer, int x, int y, SDL_Rect* clip){
+void SDLTextureWrapper::render(SDL_Renderer* renderer, int x, int y, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip){
     // Render the image into the correct location
     SDL_Rect renderQuad = {x, y, width, height};
 
@@ -863,7 +1004,7 @@ void SDLTextureWrapper::render(SDL_Renderer* renderer, int x, int y, SDL_Rect* c
     }
 
     // Render to the screen
-    SDL_RenderCopy(renderer, texture, clip, &renderQuad);
+    SDL_RenderCopyEx(renderer, texture, clip, &renderQuad, angle, center, flip );
 }
 
 void SDLTextureWrapper::setColor(Uint8 red, Uint8 green, Uint8 blue){
