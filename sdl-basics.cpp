@@ -6,11 +6,11 @@
 //---------- SDLWindowWrapper ----------------------------------------
 //--------------------------------------------------------------------
 //---------- CONSTRUCTORS & DESTRUCTOR ----------
-SDLWindowWrapper::SDLWindowWrapper() : screenWidth(SCREEN_WIDTH), screenHeight(SCREEN_HEIGHT), window(nullptr), renderer(nullptr), windowSurface(nullptr){
+SDLWindowWrapper::SDLWindowWrapper() : screenWidth(SCREEN_WIDTH), screenHeight(SCREEN_HEIGHT), window(nullptr), renderer(nullptr), windowSurface(nullptr), useTTF(true) {
     init("SDL Window");
 }
 
-SDLWindowWrapper::SDLWindowWrapper(int width, int height, string title) : screenWidth(width), screenHeight(height), window(nullptr), renderer(nullptr), windowSurface(nullptr){
+SDLWindowWrapper::SDLWindowWrapper(int width, int height, string title, bool useTTF) : screenWidth(width), screenHeight(height), window(nullptr), renderer(nullptr), windowSurface(nullptr), useTTF(useTTF){
     init(title);
 }
 
@@ -37,12 +37,15 @@ SDLWindowWrapper::~SDLWindowWrapper(){
     // Quit SDL Subsystems
     IMG_Quit();
     SDL_Quit();
+    if(useTTF){
+        TTF_Quit();
+    }
 }
 
 //---------- TUTORIAL CODE ----------
 void SDLWindowWrapper::lesson1(){
     //Fill the surface white
-    SDL_FillRect( windowSurface, NULL, SDL_MapRGB( windowSurface->format, 0xFF, 0xFF, 0xFF ) );
+    SDL_FillRect( windowSurface, nullptr, SDL_MapRGB( windowSurface->format, 0xFF, 0xFF, 0xFF ) );
     
     //Update the surface
     SDL_UpdateWindowSurface( window );
@@ -62,7 +65,7 @@ void SDLWindowWrapper::lesson2(){
     } else {
         // Main loop
         //Apply the image
-        SDL_BlitSurface( gHelloWorld, NULL, windowSurface, NULL );
+        SDL_BlitSurface( gHelloWorld, nullptr, windowSurface, nullptr );
         
         //Update the surface
         SDL_UpdateWindowSurface(window);
@@ -74,7 +77,7 @@ void SDLWindowWrapper::lesson2(){
     // Nominally part of close()
     // Deallocate surface
     SDL_FreeSurface( gHelloWorld );
-    gHelloWorld = NULL;
+    gHelloWorld = nullptr;
 }
 
 void SDLWindowWrapper::lesson3(){
@@ -101,7 +104,7 @@ void SDLWindowWrapper::lesson3(){
                 
                 // Here is where building the image goes
                 // Blit the image on each pass
-                SDL_BlitSurface( gHelloWorld, NULL, windowSurface, NULL );
+                SDL_BlitSurface( gHelloWorld, nullptr, windowSurface, nullptr );
 
                 // Update the surface of the window to display the new image
                 SDL_UpdateWindowSurface(window);
@@ -112,7 +115,7 @@ void SDLWindowWrapper::lesson3(){
     // Nominally part of close()
     // Deallocate surface
     SDL_FreeSurface( gHelloWorld );
-    gHelloWorld = NULL;
+    gHelloWorld = nullptr;
 }
 
 void SDLWindowWrapper::lesson4(){
@@ -173,7 +176,7 @@ void SDLWindowWrapper::lesson4(){
                 
                 // Here is where building the image goes
                 // Blit the image on each pass
-                SDL_BlitSurface( gCurrentSurface, NULL, windowSurface, NULL );
+                SDL_BlitSurface( gCurrentSurface, nullptr, windowSurface, nullptr );
 
                 // Update the surface of the window to display the new image
                 SDL_UpdateWindowSurface(window);
@@ -200,7 +203,7 @@ void SDLWindowWrapper::lesson5(){
         stretchRect.y = 0;
         stretchRect.w = screenWidth;
         stretchRect.h = screenHeight;
-        SDL_BlitScaled( gImageStretch, NULL, windowSurface, &stretchRect );
+        SDL_BlitScaled( gImageStretch, nullptr, windowSurface, &stretchRect );
 
         // Update the surface of the window to display the new image
         SDL_UpdateWindowSurface(window);
@@ -234,7 +237,7 @@ void SDLWindowWrapper::lesson6(){
     if(gPNG) {
         // Main loop
         //Apply the image
-        SDL_BlitSurface( gPNG, NULL, windowSurface, NULL );
+        SDL_BlitSurface( gPNG, nullptr, windowSurface, nullptr );
         
         //Update the surface
         SDL_UpdateWindowSurface(window);
@@ -272,7 +275,7 @@ void SDLWindowWrapper::lesson7(){
                 SDL_RenderClear(renderer);
 
                 // Render texture to screen
-                SDL_RenderCopy(renderer, gTexture, NULL, NULL );
+                SDL_RenderCopy(renderer, gTexture, nullptr, nullptr );
 
                 // Update screen
                 SDL_RenderPresent(renderer);
@@ -361,7 +364,7 @@ void SDLWindowWrapper::lesson9(){
                 SDL_RenderSetViewport(renderer, &topLeftViewport);
                 
                 //Render texture to screen
-                SDL_RenderCopy(renderer, gTexture, NULL, NULL);
+                SDL_RenderCopy(renderer, gTexture, nullptr, nullptr);
                 
                 //Top right viewport
                 SDL_Rect topRightViewport;
@@ -372,7 +375,7 @@ void SDLWindowWrapper::lesson9(){
                 SDL_RenderSetViewport(renderer, &topRightViewport);
                 
                 //Render texture to screen
-                SDL_RenderCopy(renderer, gTexture, NULL, NULL);
+                SDL_RenderCopy(renderer, gTexture, nullptr, nullptr);
 
                 //Bottom viewport
                 SDL_Rect bottomViewport;
@@ -383,7 +386,7 @@ void SDLWindowWrapper::lesson9(){
                 SDL_RenderSetViewport(renderer, &bottomViewport);
                 
                 //Render texture to screen
-                SDL_RenderCopy(renderer, gTexture, NULL, NULL);
+                SDL_RenderCopy(renderer, gTexture, nullptr, nullptr);
 
                 // Update screen
                 SDL_RenderPresent(renderer);
@@ -771,7 +774,7 @@ void SDLWindowWrapper::lesson15(){
 
             // Render
             arrow.render(renderer, (screenHeight - arrow.getWidth()) / 2, (screenHeight - arrow.getHeight()) / 2, nullptr, degrees, nullptr, flipType);
-            // Note the center is the center of rotation, so if you choose something other than NULL
+            // Note the center is the center of rotation, so if you choose something other than nullptr
 
             // Update screen
             SDL_RenderPresent(renderer);
@@ -784,7 +787,41 @@ void SDLWindowWrapper::lesson15(){
 }
 
 void SDLWindowWrapper::lesson16(){
-    // TODO
+        // Loading flag
+    bool success = true;
+
+    // Texture wrappers for images
+    SDLTextBox textBox;
+
+    // Load the images
+    success = textBox.loadFromFile("lazy.ttf", 28);
+
+    if(success){
+        // Main loop
+        // The current event
+        SDL_Event e;
+        // Flag for quitting
+        bool quit = false;
+        while( quit == false ){
+            // Remove all events from the queue
+            while( SDL_PollEvent( &e ) ){
+                // Here is where event processing goes
+                if( e.type == SDL_QUIT ){
+                    quit = true;
+                }
+                
+                // Clear screen
+                SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+                SDL_RenderClear(renderer);
+
+                // Render the two images
+                textBox.render("Hello world!", renderer, 0, 0);
+
+                // Update screen
+                SDL_RenderPresent(renderer);
+            }
+        }
+    }
 }
 
 void SDLWindowWrapper::lesson17(){
@@ -889,11 +926,12 @@ void SDLWindowWrapper::saveImg(string path){
 
 //---------- PRIVATE UTILITIES ----------
 bool SDLWindowWrapper::init(string title){
+    // TODO - Make code more compact - early returns make else blocks unnecessary
     if(SDL_Init(SDL_INIT_VIDEO) < 0){
         fprintf(stderr, "SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
         // TODO - exceptions?
         return false;
-    } else{
+    } else {
         // Create the window
         window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screenWidth, screenHeight, SDL_WINDOW_SHOWN);
         if(!window){
@@ -918,8 +956,14 @@ bool SDLWindowWrapper::init(string title){
                     // TODO - exceptions?
                     return false;
                 } else {
-                    // Get the window surface
-                    windowSurface = SDL_GetWindowSurface(window);
+                    if(useTTF && TTF_Init() == -1){
+                        fprintf(stderr, "SDL_TTF could not initialize ! TTF_Error: %s\n", TTF_GetError());
+                        // TODO - exceptions?
+                        return false;
+                    } else {
+                        // Get the window surface
+                        windowSurface = SDL_GetWindowSurface(window);
+                    }
                 }
             }
         }
@@ -1026,4 +1070,77 @@ int SDLTextureWrapper::getWidth(){
 
 int SDLTextureWrapper::getHeight(){
     return width;
+}
+
+//--------------------------------------------------------------------
+//---------- SDLTextBox ----------------------------------------------
+//--------------------------------------------------------------------
+//---------- CONSTRUCTORS & DESTRUCTOR ----------
+SDLTextBox::SDLTextBox() : font(nullptr), backgroundColor({255, 255, 255, 0}), textColor({0, 0, 0, 255}) {}
+
+SDLTextBox::SDLTextBox(const SDLTextureWrapper& other) : font(nullptr), backgroundColor({255, 255, 255, 0}), textColor({0, 0, 0, 255}) {
+    // TODO
+}
+
+SDLTextBox& SDLTextBox::operator=(const SDLTextureWrapper& other) {
+    // TODO
+    return *this;
+}
+
+SDLTextBox::~SDLTextBox() {
+    free();
+}
+
+//---------- UTILITIES ----------
+bool SDLTextBox::loadFromFile(string path, int size){
+    // Free any previously loaded fonts
+    free();
+
+    // Loading success flag
+    bool success = true;
+
+    // Open the font
+    font = TTF_OpenFont( path.c_str(), size );
+    if( font == nullptr )
+    {
+        fprintf(stderr, "Failed to load lazy font! SDL_ttf Error: %s\n", TTF_GetError());
+        // TODO - exceptions?
+        success = false;
+    }
+    return success;
+}
+
+void SDLTextBox::free(){
+    // Delete the font
+    TTF_CloseFont(font);
+    font = nullptr;
+}
+
+void SDLTextBox::render(string text, SDL_Renderer* renderer, int x, int y) {
+    // Create a surface from the text
+    SDL_Surface* textSurface = TTF_RenderText_Solid( font, text.c_str(), textColor );
+    if(!textSurface){
+        fprintf(stderr, "Unable to render text to surface! SDL_TTF Error: %s\n", TTF_GetError());
+    } else {
+        // Create the texture
+        SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+        if(!textTexture){
+            fprintf(stderr, "Unable to render texture from surface! SDL Error: %s\n", SDL_GetError());
+        } else {
+            // The rendering quad 
+            SDL_Rect renderQuad = {x, y, textSurface->w, textSurface->h};
+
+            // Create background to text box
+            SDL_SetRenderDrawColor(renderer, backgroundColor.r, backgroundColor.b, backgroundColor.g, backgroundColor.a);        
+            SDL_RenderFillRect(renderer, &renderQuad);
+
+            // Render the texture
+            SDL_RenderCopy(renderer, textTexture, nullptr, &renderQuad);
+
+            // Free the texture
+            SDL_DestroyTexture(textTexture);
+        }
+        // Free the surface
+        SDL_FreeSurface(textSurface);
+    }
 }

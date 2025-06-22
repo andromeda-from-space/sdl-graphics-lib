@@ -2,11 +2,14 @@
 #define SDL_BASICS_H
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include <stdio.h>
 #include <string>
 
 // TODO - pass strings by reference
 // TODO - deep copying
+// TODO - shared pointers
+// TODO - portability of fprintf
 
 //Screen dimension constants
 const int SCREEN_WIDTH = 640;
@@ -29,7 +32,7 @@ class SDLWindowWrapper {
     public:
         //---------- CONSTRUCTORS & DESTRUCTOR ----------
         SDLWindowWrapper();
-        SDLWindowWrapper(int width, int height, string title);
+        SDLWindowWrapper(int width, int height, string title, bool useTTF = false);
         SDLWindowWrapper(const SDLWindowWrapper & other);
         SDLWindowWrapper& operator=(const SDLWindowWrapper & other);
         ~SDLWindowWrapper();
@@ -118,12 +121,19 @@ class SDLWindowWrapper {
         // Pointer for the SDL_Surface
         // --DEPRECATED--
         SDL_Surface* windowSurface;
+        // Boolean for whether or not the TTF subsystem is started
+        bool useTTF;
 
         //---------- PRIVATE UTILITIES ----------
         // Initialize the SDL subsystems for use
         bool init(string title);
 };
 
+/*
+SDLTextureWrapper
+
+Intended as a support class for the SDLWindowWrapper Class. Performs very basic 2D texture rendering using the GPU accelerated rendering provided by SDL.
+*/
 class SDLTextureWrapper {
     public:
         //---------- CONSTRUCTORS & DESTRUCTOR ----------
@@ -137,7 +147,7 @@ class SDLTextureWrapper {
         bool loadFromFile(SDL_Renderer* renderer, string path);
         // Deallocates the loaded image
         void free();
-        // Renders the tecture ata given point with the provided renderer
+        // Renders the tecture at a given point with the provided renderer
         void render(SDL_Renderer* renderer, int x, int y, SDL_Rect* clip = nullptr, double angle = 0.0, SDL_Point* center = nullptr, SDL_RendererFlip flip = SDL_FLIP_NONE );
         // Performs color modulation which multiplies the colors in the texture by the fraction val / 255
         void setColor(Uint8 red, Uint8 green, Uint8 blue);
@@ -155,6 +165,35 @@ class SDLTextureWrapper {
         // Image size
         int width;
         int height;
+};
+
+/*
+SDLTextureWrapper
+
+Intended as a support class for the SDLWindowWrapper Class. Performs very basic 2D text rendering using the GPU accelerated rendering provided by SDL.
+*/
+class SDLTextBox{
+    public:
+        //---------- CONSTRUCTORS & DESTRUCTOR ----------
+        SDLTextBox();
+        SDLTextBox(const SDLTextureWrapper& other);
+        SDLTextBox& operator=(const SDLTextureWrapper& other);
+        ~SDLTextBox();
+
+        //---------- UTILITIES ----------
+        // Loads the font
+        bool loadFromFile(string path, int size);
+        // Deallocates the font
+        void free();
+        // Render the text box in the provided location
+        void render(string text, SDL_Renderer* renderer, int x, int y);
+    private:
+        // Pointer to the font the text box will use
+        TTF_Font* font;
+        // Background Color - default is transparent
+        SDL_Color backgroundColor;
+        // Text Color - default is black
+        SDL_Color textColor;
 };
 
 #endif
