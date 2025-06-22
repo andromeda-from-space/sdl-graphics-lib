@@ -10,7 +10,7 @@ SDLWindowWrapper::SDLWindowWrapper() : screenWidth(SCREEN_WIDTH), screenHeight(S
     init("SDL Window");
 }
 
-SDLWindowWrapper::SDLWindowWrapper(int width, int height, string title, bool useTTF) : screenWidth(width), screenHeight(height), window(nullptr), renderer(nullptr), windowSurface(nullptr), useTTF(useTTF){
+SDLWindowWrapper::SDLWindowWrapper(int width, int height, std::string title, bool useTTF) : screenWidth(width), screenHeight(height), window(nullptr), renderer(nullptr), windowSurface(nullptr), useTTF(useTTF){
     init(title);
 }
 
@@ -122,7 +122,7 @@ void SDLWindowWrapper::lesson4(){
     // Load the data
     // Nominally prt of init()
     // Array of file names for loading
-    string filenames[] = {
+    std::string filenames[] = {
         "press.bmp",
         "up.bmp",
         "down.bmp",
@@ -780,10 +780,6 @@ void SDLWindowWrapper::lesson15(){
             SDL_RenderPresent(renderer);
         }
     }
-
-
-
-
 }
 
 void SDLWindowWrapper::lesson16(){
@@ -825,7 +821,46 @@ void SDLWindowWrapper::lesson16(){
 }
 
 void SDLWindowWrapper::lesson17(){
-    // TODO
+    // Make the button sprite clips
+    SDL_Rect spriteClips[BUTTON_SPRITE_TOTAL];
+    for(int i = 0; i < BUTTON_SPRITE_TOTAL; i++){
+        spriteClips[i].x = 0;
+        spriteClips[i].y = i * 200;
+        spriteClips[i].w = BUTTON_WIDTH;
+        spriteClips[i].h = BUTTON_HEIGHT;
+    }
+
+    // Make the button
+    SDLButton theButton = SDLButton(renderer, "button.png", spriteClips, BUTTON_SPRITE_TOTAL);
+
+    // The current event
+    SDL_Event e;
+    // Flag for quitting
+    bool quit = false;
+
+    // Main loop
+    while( quit == false ){
+        // Remove all events from the queue
+        while( SDL_PollEvent( &e ) ){
+            // Here is where event processing goes
+            if( e.type == SDL_QUIT ){
+                quit = true;
+            } else{
+                theButton.handleEvent(&e);
+            }
+        }
+            
+        // Clear screen
+        SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+        SDL_RenderClear(renderer);
+
+        // Render
+        theButton.render(renderer);
+
+        // Update screen
+        SDL_RenderPresent(renderer);
+    }
+    
 }
 
 void SDLWindowWrapper::lesson18(){
@@ -881,7 +916,7 @@ void SDLWindowWrapper::lesson30(){
 }
 
 //---------- UTILITIES ----------
-SDL_Surface* SDLWindowWrapper::loadSurface(string path){
+SDL_Surface* SDLWindowWrapper::loadSurface(std::string path){
     // Optimized surface that matches the window surface format
     SDL_Surface* optimizedSurface = nullptr;
     //Load image at specified path
@@ -899,7 +934,7 @@ SDL_Surface* SDLWindowWrapper::loadSurface(string path){
     return optimizedSurface;
 }
 
-SDL_Texture* SDLWindowWrapper::loadTexture(string path){
+SDL_Texture* SDLWindowWrapper::loadTexture(std::string path){
     // Texture to load the image into
     SDL_Texture* newTexture = nullptr;
     // Load image at specified path as a surface
@@ -917,7 +952,7 @@ SDL_Texture* SDLWindowWrapper::loadTexture(string path){
     return newTexture;
 }
 
-void SDLWindowWrapper::saveImg(string path){
+void SDLWindowWrapper::saveImg(std::string path){
     // Get the window surface
     SDL_Surface* currSurface = SDL_GetWindowSurface(window);
     // Save
@@ -925,7 +960,7 @@ void SDLWindowWrapper::saveImg(string path){
 }
 
 //---------- PRIVATE UTILITIES ----------
-bool SDLWindowWrapper::init(string title){
+bool SDLWindowWrapper::init(std::string title){
     // TODO - Make code more compact - early returns make else blocks unnecessary
     if(SDL_Init(SDL_INIT_VIDEO) < 0){
         fprintf(stderr, "SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
@@ -991,7 +1026,7 @@ SDLTextureWrapper::~SDLTextureWrapper(){
 }
 
 //---------- UTILITIES ----------
-bool SDLTextureWrapper::loadFromFile(SDL_Renderer* renderer, string path){
+bool SDLTextureWrapper::loadFromFile(SDL_Renderer* renderer, std::string path){
     // Remove anything that has already been loaded in
     free();
 
@@ -1092,7 +1127,7 @@ SDLTextBox::~SDLTextBox() {
 }
 
 //---------- UTILITIES ----------
-bool SDLTextBox::loadFromFile(string path, int size){
+bool SDLTextBox::loadFromFile(std::string path, int size){
     // Free any previously loaded fonts
     free();
 
@@ -1116,9 +1151,9 @@ void SDLTextBox::free(){
     font = nullptr;
 }
 
-void SDLTextBox::render(string text, SDL_Renderer* renderer, int x, int y) {
+void SDLTextBox::render(std::string text, SDL_Renderer* renderer, int x, int y) {
     // Create a surface from the text
-    SDL_Surface* textSurface = TTF_RenderText_Solid( font, text.c_str(), textColor );
+    SDL_Surface* textSurface = TTF_RenderText_Solid(font, text.c_str(), textColor);
     if(!textSurface){
         fprintf(stderr, "Unable to render text to surface! SDL_TTF Error: %s\n", TTF_GetError());
     } else {
@@ -1143,4 +1178,122 @@ void SDLTextBox::render(string text, SDL_Renderer* renderer, int x, int y) {
         // Free the surface
         SDL_FreeSurface(textSurface);
     }
+}
+
+//--------------------------------------------------------------------
+//---------- SDLTextBox ----------------------------------------------
+//--------------------------------------------------------------------
+//---------- CONSTRUCTORS & DESTRUCTOR ----------
+SDLButton::SDLButton() {
+    // TODO
+}
+
+SDLButton::SDLButton(SDL_Renderer* renderer, std::string spriteSheet, SDL_Rect* spriteClips, int numSprites) : position({0, 0}), currentSprite(BUTTON_SPRITE_MOUSE_OUT), 
+buttonSpriteSheet(nullptr), spriteClips(spriteClips), numSprites(numSprites) {
+    // Load the sprite sheet
+    buttonSpriteSheet = new SDLTextureWrapper();
+    loadFromFile(renderer, spriteSheet);
+
+    // TODO - Copy the sprite clips
+}
+
+SDLButton::SDLButton(const SDLButton& other){
+    // TODO
+}
+
+SDLButton& SDLButton::operator=(const SDLButton& other){
+    // TODO
+    return *this;
+}
+
+SDLButton::~SDLButton(){
+    // Clean up the sprite sheet
+    if(buttonSpriteSheet){
+        delete(buttonSpriteSheet);
+        buttonSpriteSheet = nullptr;
+    }
+
+    /*
+    // Clean up the sprite clips
+    if(spriteClips){
+        delete[](spriteClips);
+        spriteClips = nullptr;
+    }
+    */
+}
+
+//---------- UTILITIES ----------
+bool SDLButton::loadFromFile(SDL_Renderer* renderer, std::string path){
+    return buttonSpriteSheet->loadFromFile(renderer, path);
+}
+
+void SDLButton::setPosition( int x, int y ){
+    position.x = x;
+    position.y = y;
+}
+
+void SDLButton::handleEvent( SDL_Event* e ){
+    //If mouse event happened
+    if( e->type == SDL_MOUSEMOTION || e->type == SDL_MOUSEBUTTONDOWN || e->type == SDL_MOUSEBUTTONUP )
+    {
+        //Get mouse position
+        int x, y;
+        SDL_GetMouseState( &x, &y );
+
+        //Check if mouse is in button
+        bool inside = true;
+
+        // Mouse is left of the button
+        if( x < position.x )
+        {
+            inside = false;
+        }
+        // Mouse is right of the button
+        else if( x > position.x + BUTTON_WIDTH )
+        {
+            inside = false;
+        }
+        // Mouse above the button
+        else if( y < position.y )
+        {
+            inside = false;
+        }
+        // Mouse below the button
+        else if( y > position.y + BUTTON_HEIGHT )
+        {
+            inside = false;
+        }
+
+        // TODO - fix constants
+        // TODO - use short circuit ORs
+
+        // Mouse is outside button
+        if(!inside)
+        {
+            currentSprite = BUTTON_SPRITE_MOUSE_OUT;
+        } else {
+            //Set mouse over sprite
+            switch( e->type )
+            {
+                case SDL_MOUSEMOTION:
+                    currentSprite = BUTTON_SPRITE_MOUSE_OVER_MOTION;
+                    break;
+            
+                case SDL_MOUSEBUTTONDOWN:
+                    currentSprite = BUTTON_SPRITE_MOUSE_DOWN;
+                    break;
+                
+                case SDL_MOUSEBUTTONUP:
+                    currentSprite = BUTTON_SPRITE_MOUSE_UP;
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    }
+}
+
+void SDLButton::render(SDL_Renderer* renderer){
+    buttonSpriteSheet->render(renderer, position.x, position.y, &spriteClips[currentSprite]);
 }

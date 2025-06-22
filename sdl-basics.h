@@ -26,13 +26,25 @@ enum KeyPressSurfaces {
     KEY_PRESS_SURFACE_TOTAL
 };
 
-using namespace std;
+// Lesson 17 - Button constants
+const int BUTTON_WIDTH = 300;
+const int BUTTON_HEIGHT = 200;
+const int TOTAL_BUTTONS = 4;
+
+enum LButtonSprite
+{
+    BUTTON_SPRITE_MOUSE_OUT = 0,
+    BUTTON_SPRITE_MOUSE_OVER_MOTION = 1,
+    BUTTON_SPRITE_MOUSE_DOWN = 2,
+    BUTTON_SPRITE_MOUSE_UP = 3,
+    BUTTON_SPRITE_TOTAL = 4
+};
 
 class SDLWindowWrapper {
     public:
         //---------- CONSTRUCTORS & DESTRUCTOR ----------
         SDLWindowWrapper();
-        SDLWindowWrapper(int width, int height, string title, bool useTTF = false);
+        SDLWindowWrapper(int width, int height, std::string title, bool useTTF = false);
         SDLWindowWrapper(const SDLWindowWrapper & other);
         SDLWindowWrapper& operator=(const SDLWindowWrapper & other);
         ~SDLWindowWrapper();
@@ -103,12 +115,12 @@ class SDLWindowWrapper {
         //---------- UTILITIES ----------
         // Load function for bmp images
         // --DEPRECATED--
-        SDL_Surface* loadSurface(string path);
+        SDL_Surface* loadSurface(std::string path);
         // Load textures as opposed to surfaces for hardware rendering
         // --DEPRECATED--
-        SDL_Texture* loadTexture(string path);
+        SDL_Texture* loadTexture(std::string path);
         // Saves what's currently in the window
-        void saveImg(string path);
+        void saveImg(std::string path);
     private:
         // Width of the screen
         int screenWidth;
@@ -126,7 +138,7 @@ class SDLWindowWrapper {
 
         //---------- PRIVATE UTILITIES ----------
         // Initialize the SDL subsystems for use
-        bool init(string title);
+        bool init(std::string title);
 };
 
 /*
@@ -144,7 +156,7 @@ class SDLTextureWrapper {
 
         //---------- UTILITIES ----------
         // Loads an image from a file
-        bool loadFromFile(SDL_Renderer* renderer, string path);
+        bool loadFromFile(SDL_Renderer* renderer, std::string path);
         // Deallocates the loaded image
         void free();
         // Renders the tecture at a given point with the provided renderer
@@ -182,11 +194,11 @@ class SDLTextBox{
 
         //---------- UTILITIES ----------
         // Loads the font
-        bool loadFromFile(string path, int size);
+        bool loadFromFile(std::string path, int size);
         // Deallocates the font
         void free();
         // Render the text box in the provided location
-        void render(string text, SDL_Renderer* renderer, int x, int y);
+        void render(std::string text, SDL_Renderer* renderer, int x, int y);
     private:
         // Pointer to the font the text box will use
         TTF_Font* font;
@@ -194,6 +206,42 @@ class SDLTextBox{
         SDL_Color backgroundColor;
         // Text Color - default is black
         SDL_Color textColor;
+};
+
+/*
+SDLButton
+
+A class to make buttons in SDL using mouse events. Code is a little difficult to use. Main take away is the mouse events.
+*/
+class SDLButton {
+    public:
+        //---------- CONSTRUCTORS & DESTRUCTOR ----------
+        SDLButton();
+        SDLButton(SDL_Renderer* renderer, std::string spriteSheet, SDL_Rect* spriteClips, int numSprites);
+        SDLButton(const SDLButton& other);
+        SDLButton& operator=(const SDLButton& other);
+        ~SDLButton();
+
+        //---------- UTILITIES ----------
+        // Load the sprite sheet for the button
+        bool loadFromFile(SDL_Renderer* renderer, std::string path);
+        // Sets top left position
+        void setPosition( int x, int y );
+        // Handles mouse event and sets the sprite accordingly
+        void handleEvent( SDL_Event* e );
+        // Shows button sprite
+        void render(SDL_Renderer* renderer);
+    private:
+        // Top left position
+        SDL_Point position;
+        // Currently used global sprite
+        LButtonSprite currentSprite;
+        // Texture wrapper 
+        SDLTextureWrapper* buttonSpriteSheet;
+        // Clips for the button
+        SDL_Rect* spriteClips;
+        // Number of different button sprites
+        int numSprites;
 };
 
 #endif
