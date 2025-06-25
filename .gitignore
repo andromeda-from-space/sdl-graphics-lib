@@ -3,3 +3,5 @@
 sdl-test
 # Ignore the tutorial files
 scratch.txt
+# Ignore the .vscode folder
+/.vscode

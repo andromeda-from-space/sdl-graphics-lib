@@ -167,6 +167,8 @@ class SDLTextureWrapper {
         void setAlpha(Uint8 alpha);
         // Set the blend mode of the texture
         void setBlendMode(SDL_BlendMode blending);
+        // Create a textuyre for some text
+        bool createTextTexture(SDL_Renderer* renderer, TTF_Font* font, std::string text, SDL_Color& color);
 
         //---------- ACCESSORS ----------
         int getWidth();

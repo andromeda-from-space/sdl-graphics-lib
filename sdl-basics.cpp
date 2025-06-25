@@ -1,6 +1,8 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
 
+#include <sstream>
+
 #include "sdl-basics.h"
 
 //--------------------------------------------------------------------
@@ -1114,7 +1116,80 @@ void SDLWindowWrapper::lesson21(){
 }
 
 void SDLWindowWrapper::lesson22(){
-    // TODO
+    // Take aways:
+    // SDL_GetTicks gives the count of milliseconds since the program was started
+
+    // Load a font
+    TTF_Font* font = nullptr;
+    font = TTF_OpenFont( "media/lazy.ttf", 28);
+    if(!font){
+        fprintf(stderr, "Failed to load lazy font! SDL_ttf Error: %s\n", TTF_GetError());
+    } else {
+        // Text color - black
+        SDL_Color textColor = {0x00, 0x00, 0x00, 0xFF};
+
+        // Create the prompt texture
+        SDLTextureWrapper prompt = SDLTextureWrapper();
+        if(!prompt.createTextTexture(renderer, font, "Press Enter to Reset Start Time.", textColor)){
+            fprintf(stderr, "Unable to create texture from text! SDL_ttf Error: %s\n", TTF_GetError());
+        } else {
+            // Create the timer texture
+            SDLTextureWrapper time;
+
+            // Main loop flag
+            bool quit = false;
+
+            // Event handler
+            SDL_Event e;
+
+            // Current time start time
+            Uint32 startTime = 0;
+
+            // In memory text stream
+            std::stringstream timeText;
+
+            // Time stamp texture
+            SDLTextureWrapper timeTextTexture = SDLTextureWrapper();
+
+            // While application is running
+            while(!quit){
+                // Handle events on queue
+                while( SDL_PollEvent( &e ) != 0 ) {
+                    // User requests quit
+                    if( e.type == SDL_QUIT ) {
+                        quit = true;
+                    } else if( e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_RETURN ) {   
+                        // Reset start time on return keypress
+                        startTime = SDL_GetTicks();
+                    }
+                }
+
+                // Pull out the current time stamp since starting
+                timeText.str( "" );
+                timeText << "Milliseconds since start time " << SDL_GetTicks() - startTime;
+
+                // Attempt to render the text
+                if(!timeTextTexture.createTextTexture(renderer, font, timeText.str(), textColor)){
+                    fprintf(stderr, "Unable to create texture from text! SDL_ttf Error: %s\n", TTF_GetError());
+                }
+
+                // Clear screen
+                SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+                SDL_RenderClear(renderer);
+
+                // Render the text
+                prompt.render(renderer, 0, 0);
+                timeTextTexture.render(renderer, 0, screenHeight - timeTextTexture.getHeight());
+
+                // Update the screen
+                SDL_RenderPresent(renderer);
+            }
+        }
+
+        // Delete the font
+        TTF_CloseFont(font);
+        font = nullptr;
+    }
 }
 
 void SDLWindowWrapper::lesson23(){
@@ -1332,13 +1407,48 @@ void SDLTextureWrapper::setBlendMode(SDL_BlendMode blending){
     SDL_SetTextureBlendMode(texture, blending);
 }
 
+bool SDLTextureWrapper::createTextTexture(SDL_Renderer* renderer, TTF_Font* font, std::string text, SDL_Color& color){
+    // Flag for if creating the texture was successful
+    bool success = true;
+
+    // Delete old texture
+    free();
+
+    // Create a surface from the text
+    SDL_Surface* textSurface = TTF_RenderText_Solid(font, text.c_str(), color);
+    
+
+    // Pull out it's dimensions
+    width = textSurface->w;
+    height = textSurface->h;
+
+    // Convert Surface to a texture
+    if(!textSurface){
+        fprintf(stderr, "Unable to render text to surface! SDL_TTF Error: %s\n", TTF_GetError());
+        success = false;
+    } else {
+        // Create the texture
+        texture = SDL_CreateTextureFromSurface(renderer, textSurface);
+        if(!texture){
+            fprintf(stderr, "Unable to render texture from surface! SDL Error: %s\n", SDL_GetError());
+            // TODO - Exceptions?
+            success = false;
+        }
+        
+        // Clean up
+        SDL_FreeSurface(textSurface);
+    }
+
+    return success;
+}
+
 //---------- ACCESSORS ----------
 int SDLTextureWrapper::getWidth(){
-    return height;
+    return width;
 }
 
 int SDLTextureWrapper::getHeight(){
-    return width;
+    return height;
 }
 
 //--------------------------------------------------------------------
