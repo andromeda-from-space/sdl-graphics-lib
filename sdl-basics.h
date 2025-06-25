@@ -10,6 +10,7 @@
 // TODO - deep copying
 // TODO - shared pointers
 // TODO - portability of fprintf
+// TODO - more sophisticated text handling
 
 //Screen dimension constants
 const int SCREEN_WIDTH = 640;
@@ -182,7 +183,7 @@ class SDLTextureWrapper {
 };
 
 /*
-SDLTextureWrapper
+SDLTextBox
 
 Intended as a support class for the SDLWindowWrapper Class. Performs very basic 2D text rendering using the GPU accelerated rendering provided by SDL.
 */
@@ -244,6 +245,45 @@ class SDLButton {
         SDL_Rect* spriteClips;
         // Number of different button sprites
         int numSprites;
+};
+
+
+/*
+SDLTimer
+
+Uses the SDL Library to create a timer that can be started stopped and paused. Since the SDL_GetTicks reads the time from the start of the program, this allows for the program to ignore time when paused.
+*/
+class SDLTimer {
+    public:
+        //---------- CONSTRUCTORS & DESTRUCTOR ----------
+        SDLTimer();
+
+        //---------- UTILITIES ----------
+        // Start the timer - resets the timer
+        void start();
+        // Stop the timer - resest the timer in unstarted state
+        void stop();
+        // Pause the timer
+        void pause();
+        // Unpause the timer
+        void unpause();
+        // Gets the timer's time
+        Uint32 getTicks();
+        // Checks the status of the timer
+        bool isStarted();
+        bool isPaused();
+
+    private:
+        // The clock time when the timer started
+        Uint32 startTicks;
+
+        // The ticks stored when the timer was paused
+        Uint32 pausedTicks;
+
+        // Flag for the timer being paused
+        bool paused;
+        // Flag for the timer being started
+        bool started;
 };
 
 #endif

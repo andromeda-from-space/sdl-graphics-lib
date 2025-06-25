@@ -1193,7 +1193,95 @@ void SDLWindowWrapper::lesson22(){
 }
 
 void SDLWindowWrapper::lesson23(){
-    // TODO
+    // Load a font
+    TTF_Font* font = nullptr;
+    font = TTF_OpenFont( "media/lazy.ttf", 28);
+    if(!font){
+        fprintf(stderr, "Failed to load lazy font! SDL_ttf Error: %s\n", TTF_GetError());
+    } else {
+        // Text color - black
+        SDL_Color textColor = {0x00, 0x00, 0x00, 0xFF};
+
+        // Create the prompt texture
+        SDLTextureWrapper prompt = SDLTextureWrapper();
+        if(!prompt.createTextTexture(renderer, font, "Enter for Start/Stop, Space for Pause/Unpause.", textColor)){
+            fprintf(stderr, "Unable to create texture from text! SDL_ttf Error: %s\n", TTF_GetError());
+        } else {
+            // Create the timer texture
+            SDLTextureWrapper time;
+
+            // Main loop flag
+            bool quit = false;
+
+            // Event handler
+            SDL_Event e;
+
+            // The timer
+            SDLTimer loopTimer;
+
+            // In memory text stream
+            std::stringstream timeText;
+
+            // Time stamp texture
+            SDLTextureWrapper timeTextTexture = SDLTextureWrapper();
+
+            // While application is running
+            while(!quit){
+                // Handle events on queue
+                while( SDL_PollEvent( &e ) != 0 ) {
+                    // User requests quit
+                    if( e.type == SDL_QUIT ) {
+                        quit = true;
+                    } else if( e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_RETURN ) {   
+                        // Start and stop
+                        if(loopTimer.isStarted()){
+                            loopTimer.stop();
+                        } else{
+                            loopTimer.start();
+                        }
+                    } else if( e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_SPACE ) {   
+                        // Pause and unpause
+                        if(loopTimer.isPaused()){
+                            loopTimer.unpause();
+                        } else{
+                            loopTimer.pause();
+                        }
+                    }
+                }
+
+                // Pull out the current time stamp since starting
+                if(loopTimer.isStarted()){
+                    timeText.str( "" );
+                    timeText << "Milliseconds since start time " << loopTimer.getTicks();
+
+                    // Attempt to render the text
+                    if(!timeTextTexture.createTextTexture(renderer, font, timeText.str(), textColor)){
+                        fprintf(stderr, "Unable to create texture from text! SDL_ttf Error: %s\n", TTF_GetError());
+                    }
+                } else {
+                    if(!timeTextTexture.createTextTexture(renderer, font, "Timer not started.", textColor)){
+                        fprintf(stderr, "Unable to create texture from text! SDL_ttf Error: %s\n", TTF_GetError());
+                    }
+                }
+                // Note - the above is inefficient, as it regenerates textures it does not need to
+
+                // Clear screen
+                SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+                SDL_RenderClear(renderer);
+
+                // Render the text
+                prompt.render(renderer, 0, 0);
+                timeTextTexture.render(renderer, 0, screenHeight - timeTextTexture.getHeight());
+
+                // Update the screen
+                SDL_RenderPresent(renderer);
+            }
+        }
+
+        // Delete the font
+        TTF_CloseFont(font);
+        font = nullptr;
+    }
 }
 
 void SDLWindowWrapper::lesson24(){
@@ -1642,4 +1730,69 @@ void SDLButton::handleEvent( SDL_Event* e ){
 
 void SDLButton::render(SDL_Renderer* renderer){
     buttonSpriteSheet->render(renderer, position.x, position.y, &spriteClips[currentSprite]);
+}
+
+//--------------------------------------------------------------------
+//---------- SDLTimer ------------------------------------------------
+//--------------------------------------------------------------------
+//---------- CONSTRUCTORS & DESTRUCTOR ----------
+SDLTimer::SDLTimer() : startTicks(0), pausedTicks(0), paused(false), started(false) {}
+
+//---------- UTILITIES ----------
+void SDLTimer::start(){
+    started = true;
+    startTicks = SDL_GetTicks();
+
+    paused = false;
+    pausedTicks = 0;
+}
+
+void SDLTimer::stop(){
+    started = false;
+    startTicks = 0;
+    
+    paused = false;
+    pausedTicks = 0;
+}
+
+void SDLTimer::pause(){
+    if(started && !paused){
+        paused = true;
+        pausedTicks = SDL_GetTicks() - startTicks;
+        startTicks = 0;
+    }
+    
+}
+
+void SDLTimer::unpause(){
+    if(started && paused){
+        paused = false;
+        startTicks = SDL_GetTicks() - pausedTicks;
+        pausedTicks = 0;
+    }
+}
+
+Uint32 SDLTimer::getTicks(){
+    // Return value
+    Uint32 time = 0;
+
+    if(started){
+        if(paused){
+            // Return the value of when the timer was paused
+            time = pausedTicks;
+        } else {
+            // Otherwise return the difference in time between now and when the timer was started
+            time = SDL_GetTicks() - startTicks;
+        }
+    }
+
+    return time;
+}
+
+bool SDLTimer::isStarted(){
+    return started;
+}
+
+bool SDLTimer::isPaused(){
+    return paused;
 }
