@@ -9,7 +9,6 @@
 // TODO - pass strings by reference
 // TODO - deep copying
 // TODO - shared pointers
-// TODO - portability of fprintf
 // TODO - more sophisticated text handling
 
 // Default Screen Sizes

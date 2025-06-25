@@ -17,8 +17,10 @@ SDLWindowWrapper::SDLWindowWrapper(int width, int height, std::string title, boo
     init(title);
 }
 
-SDLWindowWrapper::SDLWindowWrapper(const SDLWindowWrapper & other){
-    // TODO
+SDLWindowWrapper::SDLWindowWrapper(const SDLWindowWrapper & other) : screenWidth(other.screenWidth), screenHeight(other.screenHeight), window(nullptr), renderer(nullptr), useTTF(other.useTTF), fpsCap(other.fpsCap){
+    std::stringstream temp;
+    temp << SDL_GetWindowTitle(other.window) << " - new";
+    init(temp.str());
 }
 
 SDLWindowWrapper& SDLWindowWrapper::operator=(const SDLWindowWrapper & other){
@@ -27,10 +29,6 @@ SDLWindowWrapper& SDLWindowWrapper::operator=(const SDLWindowWrapper & other){
 }
 
 SDLWindowWrapper::~SDLWindowWrapper(){
-    // Destroy the surface
-    SDL_FreeSurface(windowSurface);
-    windowSurface = nullptr;
-
     // Destroy window
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
@@ -91,9 +89,6 @@ bool SDLWindowWrapper::init(std::string title){
                         fprintf(stderr, "SDL_TTF could not initialize ! TTF_Error: %s\n", TTF_GetError());
                         // TODO - exceptions?
                         return false;
-                    } else {
-                        // Get the window surface
-                        windowSurface = SDL_GetWindowSurface(window);
                     }
                 }
             }
