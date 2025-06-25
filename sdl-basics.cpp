@@ -1207,9 +1207,6 @@ void SDLWindowWrapper::lesson23(){
         if(!prompt.createTextTexture(renderer, font, "Enter for Start/Stop, Space for Pause/Unpause.", textColor)){
             fprintf(stderr, "Unable to create texture from text! SDL_ttf Error: %s\n", TTF_GetError());
         } else {
-            // Create the timer texture
-            SDLTextureWrapper time;
-
             // Main loop flag
             bool quit = false;
 
@@ -1236,14 +1233,14 @@ void SDLWindowWrapper::lesson23(){
                         // Start and stop
                         if(loopTimer.isStarted()){
                             loopTimer.stop();
-                        } else{
+                        } else {
                             loopTimer.start();
                         }
                     } else if( e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_SPACE ) {   
                         // Pause and unpause
                         if(loopTimer.isPaused()){
                             loopTimer.unpause();
-                        } else{
+                        } else{ 
                             loopTimer.pause();
                         }
                     }
@@ -1285,7 +1282,79 @@ void SDLWindowWrapper::lesson23(){
 }
 
 void SDLWindowWrapper::lesson24(){
-    // TODO
+    // To abbreviate the code, I've opted to remove a bunch of the checks made above THIS IS NOT BEST PRACTICES AND SHOULD NOT BE USED IN PRODUCTION
+    // Load a font
+    TTF_Font* font = nullptr;
+    font = TTF_OpenFont( "media/lazy.ttf", 28);
+    // ASSUMED SUCCESS
+
+    // Main loop flag
+    bool quit = false;
+
+    // Event handler
+    SDL_Event e;
+
+    // The timer
+    SDLTimer fpsTimer;
+
+    // In memory text stream
+    std::stringstream timeText;
+
+    // Time stamp texture
+    SDLTextureWrapper timeTextTexture = SDLTextureWrapper();
+
+    // Text color
+    SDL_Color textColor = {0x00, 0x00, 0x00, 0xFF};
+
+    // Frames generated
+    int countedFrames = 0;
+
+    // FPS Value
+    float avgFPS;
+
+    // Start the timer and then the loop
+    fpsTimer.start();
+    while(!quit){
+        // Handle events on queue
+        while( SDL_PollEvent( &e ) != 0 ) {
+            // User requests quit
+            if( e.type == SDL_QUIT ) {
+                quit = true;
+            }
+        }
+
+        // Clear the string stream and calculate the average FPS
+        timeText.str("");
+        avgFPS = countedFrames / (fpsTimer.getTicks() / 1000.f);
+        if( avgFPS > 2000000 ){
+            avgFPS = 0;
+        }
+        timeText << "Average FPS: " << avgFPS;
+
+        // Generate the text
+        timeTextTexture.createTextTexture(renderer, font, timeText.str(), textColor);
+        // ASSUMED SUCCESS
+
+        // Clear screen
+        SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+        SDL_RenderClear(renderer);
+
+        // Render the average FPS
+        timeTextTexture.render(renderer, (screenWidth - timeTextTexture.getWidth()) / 2, (screenHeight - timeTextTexture.getHeight()) / 2);
+
+        // Update the screen
+        SDL_RenderPresent(renderer);
+
+        // Increment the frames
+        countedFrames++;
+    }
+
+
+    // Delete the font
+    TTF_CloseFont(font);
+    font = nullptr;
+    
+    // Note - the first frame makes the value weird
 }
 
 void SDLWindowWrapper::lesson25(){
