@@ -41,6 +41,11 @@ enum LButtonSprite
     BUTTON_SPRITE_TOTAL = 4
 };
 
+// Lesson 25 - frame rate cap variables
+const int SCREEN_FPS = 60;
+const int SCREEN_TICKS_PER_FRAME = 1000 / SCREEN_FPS;
+// TODO - Fix SDLWindowWrapper Constructor for frame rate cap if needed
+
 class SDLWindowWrapper {
     public:
         //---------- CONSTRUCTORS & DESTRUCTOR ----------
@@ -136,6 +141,8 @@ class SDLWindowWrapper {
         SDL_Surface* windowSurface;
         // Boolean for whether or not the TTF subsystem is started
         bool useTTF;
+        // Frame rate cap
+        int fpsCap;
 
         //---------- PRIVATE UTILITIES ----------
         // Initialize the SDL subsystems for use
